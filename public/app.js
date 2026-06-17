@@ -710,10 +710,8 @@ async function handleCheckout(event) {
           const vietQRUrl = `https://img.vietqr.io/image/VCB-0381000579717-compact.png?amount=${amountInVND}&addInfo=${encodeURIComponent(data.id)}&accountName=${encodeURIComponent('VO DINH TRIET')}`;
           qrImg.src = vietQRUrl;
         } else if (data.paymentMethod === 'MoMo') {
-          // MoMo transfer URL with payment qr server
-          const momoPayUrl = `https://nhantien.momo.vn/0345426329`;
-          const qrServerUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(momoPayUrl)}`;
-          qrImg.src = qrServerUrl;
+          // Use the uploaded static MoMo QR code image
+          qrImg.src = '/momo-qr.png';
         }
       }
     }
