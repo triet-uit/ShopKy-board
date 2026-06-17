@@ -2,7 +2,9 @@
  * AetherShop - Premium Node.js E-Commerce Server
  * Serves static shop files and provides REST APIs for catalog, checkout, orders, and admin analytics.
  */
+require('dotenv').config();
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
@@ -26,29 +28,85 @@ const MIME_TYPES = {
 
 // Database helper functions
 function readDb(callback) {
-  fs.readFile(DATA_FILE, 'utf8', (err, data) => {
-    if (err) {
-      console.error('Failed to read database:', err);
-      callback(err, null);
-    } else {
-      try {
-        callback(null, JSON.parse(data));
-      } catch (parseErr) {
-        callback(parseErr, null);
+  if (process.env.JSONBIN_KEY && process.env.JSONBIN_BIN_ID) {
+    const options = {
+      hostname: 'api.jsonbin.io',
+      path: `/v3/b/${process.env.JSONBIN_BIN_ID}/latest`,
+      method: 'GET',
+      headers: {
+        'X-Master-Key': process.env.JSONBIN_KEY,
+        'X-Bin-Meta': 'false'
       }
-    }
-  });
+    };
+    const req = https.request(options, res => {
+      let data = '';
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        if (res.statusCode !== 200) {
+          callback(new Error(`JSONBin error status ${res.statusCode}: ${data}`), null);
+        } else {
+          try {
+            callback(null, JSON.parse(data));
+          } catch (parseErr) {
+            callback(parseErr, null);
+          }
+        }
+      });
+    });
+    req.on('error', err => callback(err, null));
+    req.end();
+  } else {
+    fs.readFile(DATA_FILE, 'utf8', (err, data) => {
+      if (err) {
+        console.error('Failed to read database:', err);
+        callback(err, null);
+      } else {
+        try {
+          callback(null, JSON.parse(data));
+        } catch (parseErr) {
+          callback(parseErr, null);
+        }
+      }
+    });
+  }
 }
 
 function writeDb(data, callback) {
-  fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2), 'utf8', (err) => {
-    if (err) {
-      console.error('Failed to write database:', err);
-      callback(err);
-    } else {
-      callback(null);
-    }
-  });
+  const body = JSON.stringify(data, null, 2);
+  if (process.env.JSONBIN_KEY && process.env.JSONBIN_BIN_ID) {
+    const options = {
+      hostname: 'api.jsonbin.io',
+      path: `/v3/b/${process.env.JSONBIN_BIN_ID}`,
+      method: 'PUT',
+      headers: {
+        'X-Master-Key': process.env.JSONBIN_KEY,
+        'Content-Type': 'application/json'
+      }
+    };
+    const req = https.request(options, res => {
+      let responseData = '';
+      res.on('data', chunk => responseData += chunk);
+      res.on('end', () => {
+        if (res.statusCode !== 200) {
+          callback(new Error(`JSONBin error status ${res.statusCode}: ${responseData}`));
+        } else {
+          callback(null);
+        }
+      });
+    });
+    req.on('error', err => callback(err));
+    req.write(body);
+    req.end();
+  } else {
+    fs.writeFile(DATA_FILE, body, 'utf8', (err) => {
+      if (err) {
+        console.error('Failed to write database:', err);
+        callback(err);
+      } else {
+        callback(null);
+      }
+    });
+  }
 }
 
 // Server request handler
