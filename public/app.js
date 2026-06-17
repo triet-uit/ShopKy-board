@@ -3,16 +3,204 @@
 let products = [];
 let cart = JSON.parse(localStorage.getItem('aethershop_cart')) || [];
 let activeCurrency = localStorage.getItem('aethershop_currency') || 'VND';
+let activeLang = localStorage.getItem('shopky_lang') || 'vi';
 let activeCategory = 'All';
 let searchQuery = '';
 let selectedDetailProduct = null;
 
 // ==========================================
+// Translation Dictionary (i18n)
+// ==========================================
+const TRANSLATIONS = {
+  vi: {
+    page_title: "ShopKy - Cửa Hàng Thời Trang, Công Nghệ & Hoa",
+    nav_shop: "Cửa hàng",
+    nav_track: "Theo dõi đơn hàng",
+    nav_admin: "Trang quản trị",
+    hero_title: "Mua Sắm Thiết Kế Hiện Đại",
+    hero_subtitle: "Khám phá trang phục thời trang, thiết bị công nghệ hiện đại và hoa tươi hoàng hôn tuyệt đẹp.",
+    search_placeholder: "Tìm kiếm danh mục sản phẩm, tai nghe, hoa hồng...",
+    cat_all: "Tất cả sản phẩm",
+    cat_fashion: "Thời trang",
+    cat_tech: "Công nghệ",
+    cat_flowers: "Hoa tươi",
+    footer_text: "© 2026 ShopKy. Thiết kế bằng phong cách kính mờ cao cấp. Bảo lưu mọi quyền.",
+    cart_title: "Giỏ hàng của bạn",
+    cart_subtotal: "Tổng tiền tạm tính",
+    cart_checkout: "Tiến hành thanh toán",
+    detail_category: "Danh mục",
+    detail_price_label: "Giá bán",
+    detail_stock_label: "Tình trạng kho",
+    detail_instock: "Còn hàng",
+    detail_add_to_cart: "Thêm vào giỏ hàng",
+    checkout_title: "Thông tin thanh toán",
+    checkout_name: "Họ và tên",
+    checkout_name_placeholder: "Nguyễn Văn A",
+    checkout_phone: "Số điện thoại",
+    checkout_phone_placeholder: "0987654321",
+    checkout_email: "Địa chỉ Email",
+    checkout_email_placeholder: "nguyenvana@example.com",
+    checkout_address: "Địa chỉ nhận hàng",
+    checkout_address_placeholder: "Số 123 Đường, Phường, Quận, Thành phố",
+    checkout_payment: "Phương thức thanh toán",
+    pay_cod: "Thanh toán khi nhận hàng (COD)",
+    pay_bank: "Chuyển khoản ngân hàng (Quét mã QR)",
+    btn_place_order: "Đặt hàng ngay",
+    summary_title: "Tóm tắt đơn hàng",
+    summary_total: "Tổng số tiền cần trả",
+    success_title: "Đặt hàng thành công!",
+    success_subtitle: "Cảm ơn bạn đã mua sắm. Đơn hàng của bạn đã được đăng ký vào hệ thống.",
+    success_order_id: "Mã đơn hàng",
+    success_total_paid: "Tổng tiền",
+    success_payment: "Phương thức",
+    success_deliver_to: "Giao đến",
+    success_continue: "Tiếp tục mua sắm",
+    track_title: "Theo dõi trạng thái đơn hàng",
+    track_placeholder: "Nhập Mã đơn hàng của bạn (ví dụ: ord-172324...)",
+    btn_search: "Tìm kiếm",
+    
+    // Dynamic JS texts
+    empty_cart: "Giỏ hàng của bạn đang trống.",
+    insufficient_stock: "Không đủ hàng trong kho! Chỉ còn lại: {stock}",
+    out_of_stock: "Hết hàng",
+    in_stock_remaining: "Còn hàng (còn {stock})",
+    added_to_cart: "Đã thêm {qty} x \"{name}\" vào giỏ hàng 🛒",
+    removed_from_cart: "Đã xóa \"{name}\" khỏi giỏ hàng",
+    fill_valid_order_id: "Vui lòng nhập Mã đơn hàng hợp lệ.",
+    order_not_found: "Không tìm thấy đơn hàng nào với mã \"{id}\".",
+    failed_fetch_order: "Lỗi tải trạng thái đơn hàng.",
+    failed_load_catalog: "Không thể tải danh sách sản phẩm.",
+    toast_switch_theme: "Đã chuyển sang chế độ {theme}",
+    toast_order_registered: "Đơn hàng của bạn đã được ghi nhận! 🌟",
+    toast_out_of_stock: "Xin lỗi, sản phẩm này hiện đã hết hàng!",
+    toast_insufficient_stock: "Không thể thêm. Tồn kho còn lại: {stock}"
+  },
+  en: {
+    page_title: "ShopKy - Premium Fashion, Tech & Flowers",
+    nav_shop: "Shop",
+    nav_track: "Track Order",
+    nav_admin: "Admin Portal",
+    hero_title: "Modern Curated Shopping",
+    hero_subtitle: "Explore premium fashion wear, state-of-the-art tech gadgets, and fresh sunset flowers.",
+    search_placeholder: "Search catalog for jackets, headphones, roses...",
+    cat_all: "All Products",
+    cat_fashion: "Fashion",
+    cat_tech: "Technology",
+    cat_flowers: "Flowers",
+    footer_text: "© 2026 ShopKy. Made with premium glassmorphic aesthetics. All rights reserved.",
+    cart_title: "Shopping Cart",
+    cart_subtotal: "Subtotal",
+    cart_checkout: "Proceed to Checkout",
+    detail_category: "Category",
+    detail_price_label: "Price",
+    detail_stock_label: "Availability",
+    detail_instock: "In Stock",
+    detail_add_to_cart: "Add to Cart",
+    checkout_title: "Checkout Details",
+    checkout_name: "Full Name",
+    checkout_name_placeholder: "John Doe",
+    checkout_phone: "Phone Number",
+    checkout_phone_placeholder: "0987654321",
+    checkout_email: "Email Address",
+    checkout_email_placeholder: "john@example.com",
+    checkout_address: "Shipping Address",
+    checkout_address_placeholder: "123 Street Name, Ward, District, City",
+    checkout_payment: "Payment Method",
+    pay_cod: "Cash on Delivery (COD)",
+    pay_bank: "Bank Transfer (Simulated QR)",
+    btn_place_order: "Place Order",
+    summary_title: "Order Summary",
+    summary_total: "Total Payable",
+    success_title: "Order Placed Successfully!",
+    success_subtitle: "Thank you for purchasing. Your order has been registered in our system.",
+    success_order_id: "Order ID",
+    success_total_paid: "Total Paid",
+    success_payment: "Payment Method",
+    success_deliver_to: "Deliver To",
+    success_continue: "Continue Shopping",
+    track_title: "Track Order Status",
+    track_placeholder: "Enter Order ID (e.g. ord-172324...)",
+    btn_search: "Search",
+    
+    // Dynamic JS texts
+    empty_cart: "Your cart is empty.",
+    insufficient_stock: "Insufficient stock! Remaining: {stock}",
+    out_of_stock: "Out of Stock",
+    in_stock_remaining: "In Stock ({stock} remaining)",
+    added_to_cart: "Added {qty} x \"{name}\" to cart 🛒",
+    removed_from_cart: "Removed \"{name}\" from cart",
+    fill_valid_order_id: "Please enter a valid Order ID.",
+    order_not_found: "No order found with ID \"{id}\".",
+    failed_fetch_order: "Failed to fetch order status.",
+    failed_load_catalog: "Failed to load product catalogue.",
+    toast_switch_theme: "Switched to {theme} mode",
+    toast_order_registered: "Your order has been registered! 🌟",
+    toast_out_of_stock: "Sorry, this item is out of stock!",
+    toast_insufficient_stock: "Cannot add more. Remaining stock: {stock}"
+  }
+};
+
+// Helper function to get translation
+function t(key, vars = {}) {
+  const dictionary = TRANSLATIONS[activeLang] || TRANSLATIONS['en'];
+  let text = dictionary[key] || TRANSLATIONS['en'][key] || key;
+  
+  // Replace variables
+  Object.keys(vars).forEach(k => {
+    text = text.replace(`{${k}}`, vars[k]);
+  });
+  return text;
+}
+
+// Function to apply translation to all DOM elements
+function applyLanguage() {
+  // Update document title
+  document.title = t('page_title');
+
+  // Translate all tags with data-translate attribute
+  document.querySelectorAll('[data-translate]').forEach(el => {
+    const key = el.getAttribute('data-translate');
+    el.innerText = t(key);
+  });
+
+  // Translate all inputs with data-translate-placeholder attribute
+  document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-translate-placeholder');
+    el.setAttribute('placeholder', t(key));
+  });
+
+  updateLanguageSwitcherUI();
+  renderProducts();
+  updateCartUI();
+}
+
+function setLanguage(lang) {
+  activeLang = lang.toLowerCase();
+  localStorage.setItem('shopky_lang', activeLang);
+  applyLanguage();
+}
+
+function updateLanguageSwitcherUI() {
+  const btnVi = document.getElementById('btn-lang-vi');
+  const btnEn = document.getElementById('btn-lang-en');
+  if (!btnVi || !btnEn) return;
+
+  if (activeLang === 'vi') {
+    btnVi.classList.add('active');
+    btnEn.classList.remove('active');
+  } else {
+    btnEn.classList.add('active');
+    btnVi.classList.remove('active');
+  }
+}
+
+// ==========================================
 // Initialization & Loading
 // ==========================================
 document.addEventListener('DOMContentLoaded', async () => {
-  // Sync UI currency buttons
+  // Sync UI currency and language switchers
   updateCurrencySwitcherUI();
+  applyLanguage(); // This handles language UI as well
   
   // Theme Toggle Setup
   const themeToggleBtn = document.getElementById('btn-theme-toggle');
@@ -25,13 +213,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', newTheme);
       localStorage.setItem('aethershop_theme', newTheme);
-      showToast(`Switched to ${newTheme} mode`, 'info');
+      showToast(t('toast_switch_theme', { theme: newTheme }), 'info');
     });
   }
 
   // Load products catalog
   await loadProducts();
-  updateCartUI();
 });
 
 async function loadProducts() {
@@ -42,7 +229,7 @@ async function loadProducts() {
     renderProducts();
   } catch (err) {
     console.error(err);
-    showToast('Failed to load product catalogue', 'danger');
+    showToast(t('failed_load_catalog'), 'danger');
   }
 }
 
@@ -72,10 +259,19 @@ function renderProducts() {
     const priceText = formatPrice(p);
     const card = document.createElement('div');
     card.className = 'product-card';
+    
+    // Category Translation display
+    let displayedCategory = p.category;
+    if (p.category === 'Fashion') displayedCategory = t('cat_fashion');
+    if (p.category === 'Tech') displayedCategory = t('cat_tech');
+    if (p.category === 'Flowers') displayedCategory = t('cat_flowers');
+
+    const buttonLabel = p.stock <= 0 ? t('out_of_stock') : t('detail_add_to_cart');
+
     card.innerHTML = `
       <div class="card-image-box" onclick="openProductDetails('${p.id}')">
         <img src="${p.image}" alt="${p.name}">
-        <span class="card-category-pill">${p.category}</span>
+        <span class="card-category-pill">${displayedCategory}</span>
       </div>
       <div class="card-content">
         <div class="card-header-row">
@@ -91,7 +287,7 @@ function renderProducts() {
         <div class="card-footer">
           <span class="card-price">${priceText}</span>
           <button class="btn-add-cart-card" ${p.stock <= 0 ? 'disabled' : ''} onclick="addToCart('${p.id}')">
-            ${p.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
+            ${buttonLabel}
           </button>
         </div>
       </div>
@@ -132,6 +328,8 @@ function setCurrency(currency) {
 function updateCurrencySwitcherUI() {
   const btnVnd = document.getElementById('btn-currency-vnd');
   const btnUsd = document.getElementById('btn-currency-usd');
+  if (!btnVnd || !btnUsd) return;
+
   if (activeCurrency === 'VND') {
     btnVnd.classList.add('active');
     btnUsd.classList.remove('active');
@@ -149,7 +347,7 @@ function addToCart(productId, qty = 1) {
   if (!product) return;
 
   if (product.stock <= 0) {
-    showToast('Sorry, this item is out of stock!', 'warning');
+    showToast(t('toast_out_of_stock'), 'warning');
     return;
   }
 
@@ -157,7 +355,7 @@ function addToCart(productId, qty = 1) {
   const currentCartQty = existingItem ? existingItem.qty : 0;
   
   if (product.stock < (currentCartQty + qty)) {
-    showToast(`Cannot add more. Remaining stock: ${product.stock}`, 'warning');
+    showToast(t('toast_insufficient_stock', { stock: product.stock }), 'warning');
     return;
   }
 
@@ -176,20 +374,19 @@ function addToCart(productId, qty = 1) {
 
   saveCart();
   updateCartUI();
-  showToast(`Added ${qty} x "${product.name}" to cart 🛒`, 'success');
+  showToast(t('added_to_cart', { qty: qty, name: product.name }), 'success');
 }
 
+// Ensure local storage changes save
 function saveCart() {
   localStorage.setItem('aethershop_cart', JSON.stringify(cart));
 }
 
 function updateCartUI() {
-  // Update badge count
   const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
   const badge = document.getElementById('cart-badge');
   if (badge) badge.innerText = totalQty;
 
-  // Render items inside drawer
   const container = document.getElementById('cart-items-container');
   const checkoutBtn = document.getElementById('btn-checkout-proceed');
   
@@ -197,7 +394,7 @@ function updateCartUI() {
   container.innerHTML = '';
 
   if (cart.length === 0) {
-    container.innerHTML = `<div class="empty-cart-text">Your cart is empty.</div>`;
+    container.innerHTML = `<div class="empty-cart-text">${t('empty_cart')}</div>`;
     if (checkoutBtn) checkoutBtn.disabled = true;
     updateSubtotal(0);
     return;
@@ -225,7 +422,7 @@ function updateCartUI() {
         <span class="cart-item-qty-input">${item.qty}</span>
         <button class="qty-btn" onclick="changeCartQty(${index}, 1)">+</button>
       </div>
-      <button class="btn-remove-item" onclick="removeCartItem(${index})" title="Remove Item">
+      <button class="btn-remove-item" onclick="removeCartItem(${index})" title="${t('removed_from_cart', {name: ''})}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"></line>
           <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -250,7 +447,7 @@ function changeCartQty(index, offset) {
   }
 
   if (offset > 0 && product.stock < newQty) {
-    showToast(`Sorry, only ${product.stock} items left in stock.`, 'warning');
+    showToast(t('toast_insufficient_stock', { stock: product.stock }), 'warning');
     return;
   }
 
@@ -259,12 +456,13 @@ function changeCartQty(index, offset) {
   updateCartUI();
 }
 
+// Remove item logic
 function removeCartItem(index) {
   const name = cart[index].name;
   cart.splice(index, 1);
   saveCart();
   updateCartUI();
-  showToast(`Removed "${name}" from cart`, 'warning');
+  showToast(t('removed_from_cart', { name: name }), 'warning');
 }
 
 function updateSubtotal(subtotal) {
@@ -312,7 +510,14 @@ function openProductDetails(productId) {
   selectedDetailProduct = p;
 
   document.getElementById('detail-product-img').src = p.image;
-  document.getElementById('detail-product-category').innerText = p.category;
+  
+  // Category translation display
+  let displayedCategory = p.category;
+  if (p.category === 'Fashion') displayedCategory = t('cat_fashion');
+  if (p.category === 'Tech') displayedCategory = t('cat_tech');
+  if (p.category === 'Flowers') displayedCategory = t('cat_flowers');
+  document.getElementById('detail-product-category').innerText = displayedCategory;
+
   document.getElementById('detail-product-name').innerText = p.name;
   document.getElementById('detail-product-rating').innerText = p.rating.toFixed(1);
   document.getElementById('detail-product-desc').innerText = p.description;
@@ -320,10 +525,10 @@ function openProductDetails(productId) {
 
   const stockBadge = document.getElementById('detail-product-stock');
   if (p.stock > 0) {
-    stockBadge.innerText = `In Stock (${p.stock} remaining)`;
+    stockBadge.innerText = t('in_stock_remaining', { stock: p.stock });
     stockBadge.classList.remove('out-of-stock');
   } else {
-    stockBadge.innerText = 'Out of Stock';
+    stockBadge.innerText = t('out_of_stock');
     stockBadge.classList.add('out-of-stock');
   }
 
@@ -348,7 +553,7 @@ function changeDetailQty(offset) {
   let val = (parseInt(input.value) || 1) + offset;
   if (val < 1) val = 1;
   if (selectedDetailProduct.stock < val) {
-    showToast(`Sorry, only ${selectedDetailProduct.stock} items left in stock.`, 'warning');
+    showToast(t('toast_insufficient_stock', { stock: selectedDetailProduct.stock }), 'warning');
     return;
   }
   input.value = val;
@@ -431,7 +636,13 @@ async function handleCheckout(event) {
     
     document.getElementById('receipt-order-id').innerText = data.id;
     document.getElementById('receipt-total').innerText = formatValue(data.subtotal, data.currency);
-    document.getElementById('receipt-payment').innerText = data.paymentMethod;
+    
+    // Payment Method display translation
+    let displayedPayment = data.paymentMethod;
+    if (data.paymentMethod === 'COD') displayedPayment = t('pay_cod');
+    if (data.paymentMethod === 'Bank Transfer') displayedPayment = t('pay_bank');
+    document.getElementById('receipt-payment').innerText = displayedPayment;
+
     document.getElementById('receipt-name').innerText = data.customer.name;
 
     openModal('modal-order-success');
@@ -446,7 +657,7 @@ async function handleCheckout(event) {
     
     // Reset Form
     document.getElementById('checkout-form').reset();
-    showToast('Your order has been registered! 🌟', 'success');
+    showToast(t('toast_order_registered'), 'success');
 
   } catch (err) {
     showToast(err.message, 'danger');
@@ -473,7 +684,7 @@ async function handleTrackOrder() {
   if (!resultDiv) return;
 
   if (!orderId) {
-    resultDiv.innerHTML = `<div class="error-text">Please enter a valid Order ID.</div>`;
+    resultDiv.innerHTML = `<div class="error-text">${t('fill_valid_order_id')}</div>`;
     return;
   }
 
@@ -484,25 +695,31 @@ async function handleTrackOrder() {
     
     const matched = orders.find(o => o.id.toLowerCase() === orderId.toLowerCase());
     if (!matched) {
-      resultDiv.innerHTML = `<div class="empty-cart-text">No order found with ID "${orderId}".</div>`;
+      resultDiv.innerHTML = `<div class="empty-cart-text">${t('order_not_found', { id: orderId })}</div>`;
       return;
     }
 
     // Render receipt track
-    const dateStr = new Date(matched.createdAt).toLocaleString();
+    const dateStr = new Date(matched.createdAt).toLocaleString(activeLang === 'vi' ? 'vi-VN' : 'en-US');
+    
+    // Payment Method display translation
+    let displayedPayment = matched.paymentMethod;
+    if (matched.paymentMethod === 'COD') displayedPayment = t('pay_cod');
+    if (matched.paymentMethod === 'Bank Transfer') displayedPayment = t('pay_bank');
+
     resultDiv.innerHTML = `
       <div class="track-receipt">
         <div class="track-status-header">
           <div>
-            <h4 style="font-size:0.95rem; font-weight:700;">Order: ${matched.id}</h4>
+            <h4 style="font-size:0.95rem; font-weight:700;">${t('success_order_id')}: ${matched.id}</h4>
             <span style="font-size:0.75rem; color:var(--text-muted);">${dateStr}</span>
           </div>
           <span class="status-tag ${matched.status.toLowerCase()}">${matched.status}</span>
         </div>
         <div style="font-size:0.82rem; display:flex; flex-direction:column; gap:0.4rem;">
-          <p><strong>Customer:</strong> ${escapeHTML(matched.customer.name)} (${matched.customer.phone})</p>
-          <p><strong>Address:</strong> ${escapeHTML(matched.customer.address)}</p>
-          <p><strong>Payment:</strong> ${matched.paymentMethod}</p>
+          <p><strong>${t('checkout_name')}:</strong> ${escapeHTML(matched.customer.name)} (${matched.customer.phone})</p>
+          <p><strong>${t('checkout_address')}:</strong> ${escapeHTML(matched.customer.address)}</p>
+          <p><strong>${t('success_payment')}:</strong> ${displayedPayment}</p>
         </div>
         <div style="border-top:1px dashed var(--border-glass); padding-top:0.75rem; font-size:0.8rem; display:flex; flex-direction:column; gap:0.3rem;">
           ${matched.items.map(item => `
@@ -513,14 +730,14 @@ async function handleTrackOrder() {
           `).join('')}
         </div>
         <div style="border-top:1px solid var(--border-glass); padding-top:0.75rem; display:flex; justify-content:space-between; font-weight:700; font-size:0.95rem;">
-          <span>Total</span>
+          <span data-translate="cart_subtotal">${t('cart_subtotal')}</span>
           <span style="color:var(--accent-cyan);">${formatValue(matched.subtotal, matched.currency)}</span>
         </div>
       </div>
     `;
   } catch (err) {
     console.error(err);
-    resultDiv.innerHTML = `<div class="error-text">Failed to fetch order status.</div>`;
+    resultDiv.innerHTML = `<div class="error-text">${t('failed_fetch_order')}</div>`;
   }
 }
 

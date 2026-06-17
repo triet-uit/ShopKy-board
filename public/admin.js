@@ -3,6 +3,217 @@
 let products = [];
 let orders = [];
 let currentTab = 'analytics';
+let activeLang = localStorage.getItem('shopky_lang') || 'vi';
+
+// ==========================================
+// Translation Dictionary (i18n)
+// ==========================================
+const TRANSLATIONS = {
+  vi: {
+    page_title: "ShopKydethuong - Trang Quản Trị Admin",
+    nav_dashboard: "Bảng điều khiển",
+    nav_orders: "Đơn hàng",
+    nav_products: "Sản phẩm",
+    nav_storefront: "Trang cửa hàng",
+    stat_revenue: "Tổng doanh thu",
+    stat_orders: "Tổng số đơn",
+    stat_pending: "Đơn hàng đang xử lý",
+    stat_pending_desc: "Chờ thực hiện giao",
+    stat_completed: "Đơn hàng hoàn thành",
+    stat_completed_desc: "Giao hàng thành công",
+    widget_popular_title: "Sản phẩm bán chạy nhất",
+    th_product: "Sản phẩm",
+    th_category: "Danh mục",
+    th_sales_count: "Số lượng bán",
+    widget_cat_sales_title: "Doanh thu theo danh mục",
+    orders_title: "Quản lý các đơn hàng",
+    th_order_id: "Mã đơn hàng",
+    th_customer: "Khách hàng",
+    th_contact: "Thông tin liên hệ",
+    th_items: "Sản phẩm mua",
+    th_total: "Tổng thanh toán",
+    th_payment: "Thành toán",
+    th_status: "Trạng thái",
+    th_date: "Ngày tạo",
+    products_title: "Danh mục sản phẩm CRUD",
+    btn_add_product: "Thêm sản phẩm mới",
+    th_image: "Hình ảnh",
+    th_name: "Tên sản phẩm",
+    th_price_vnd: "Giá (VNĐ)",
+    th_price_usd: "Giá (USD)",
+    th_stock: "Tồn kho",
+    th_rating: "Đánh giá",
+    th_actions: "Hành động",
+    footer_text: "© 2026 ShopKydethuong. Trang quản trị trung tâm. Bảo lưu mọi quyền.",
+    modal_add_title: "Thêm sản phẩm mới",
+    modal_edit_title: "Sửa thông tin sản phẩm",
+    modal_prod_name: "Tên sản phẩm",
+    modal_prod_category: "Danh mục sản phẩm",
+    modal_prod_stock: "Số lượng tồn kho",
+    modal_price_vnd: "Giá bán VNĐ (đ)",
+    modal_price_usd: "Giá bán USD ($)",
+    modal_prod_image: "Đường dẫn URL hình ảnh",
+    modal_prod_desc: "Mô tả sản phẩm",
+    btn_save_product: "Lưu thông tin sản phẩm",
+    cat_fashion: "Thời trang",
+    cat_tech: "Công nghệ",
+    cat_flowers: "Hoa tươi",
+    
+    status_pending: "Đang chờ",
+    status_processing: "Đang giao",
+    status_completed: "Hoàn thành",
+    status_cancelled: "Đã hủy",
+
+    // Dynamic js messages
+    toast_switch_theme: "Đã chuyển sang chế độ {theme}",
+    toast_load_metrics_fail: "Lỗi tải thông số thống kê.",
+    toast_load_orders_fail: "Lỗi tải danh sách đơn hàng.",
+    toast_load_products_fail: "Lỗi tải danh sách sản phẩm.",
+    toast_status_updated: "Đã cập nhật trạng thái đơn {id} sang {status} 📦",
+    toast_status_update_fail: "Lỗi cập nhật trạng thái đơn hàng.",
+    toast_product_saved: "Đã lưu thông tin sản phẩm thành công! 🌟",
+    toast_product_save_fail: "Lỗi lưu thông tin sản phẩm.",
+    toast_product_deleted: "Đã xóa sản phẩm thành công",
+    toast_product_delete_fail: "Lỗi xóa sản phẩm.",
+    confirm_delete: "Bạn có chắc chắn muốn xóa sản phẩm \"{name}\" không?",
+    units: "sản phẩm",
+    no_sales_data: "Chưa ghi nhận số liệu bán hàng.",
+    no_orders_yet: "Chưa có đơn hàng nào từ khách.",
+    pending_text: "đang chờ"
+  },
+  en: {
+    page_title: "ShopKydethuong - Admin Portal",
+    nav_dashboard: "Dashboard",
+    nav_orders: "Orders",
+    nav_products: "Products",
+    nav_storefront: "View Storefront",
+    stat_revenue: "Total Revenue",
+    stat_orders: "Total Orders",
+    stat_pending: "Processing Orders",
+    stat_pending_desc: "Awaiting fulfillment",
+    stat_completed: "Completed Orders",
+    stat_completed_desc: "Shipped successfully",
+    widget_popular_title: "Popular Products",
+    th_product: "Product",
+    th_category: "Category",
+    th_sales_count: "Sales Count",
+    widget_cat_sales_title: "Sales distribution by Category",
+    orders_title: "Manage Shop Orders",
+    th_order_id: "Order ID",
+    th_customer: "Customer",
+    th_contact: "Contact Details",
+    th_items: "Items Purchased",
+    th_total: "Total Payable",
+    th_payment: "Payment",
+    th_status: "Status",
+    th_date: "Created Date",
+    products_title: "Product Catalogue CRUD",
+    btn_add_product: "Add New Product",
+    th_image: "Image",
+    th_name: "Name",
+    th_price_vnd: "Price (VND)",
+    th_price_usd: "Price (USD)",
+    th_stock: "Stock Count",
+    th_rating: "Rating",
+    th_actions: "Actions",
+    footer_text: "© 2026 ShopKydethuong Admin Dashboard. Control center. All rights reserved.",
+    modal_add_title: "Create New Product",
+    modal_edit_title: "Edit Product Details",
+    modal_prod_name: "Product Name",
+    modal_prod_category: "Category",
+    modal_prod_stock: "Stock Level",
+    modal_price_vnd: "Price in VND (đ)",
+    modal_price_usd: "Price in USD ($)",
+    modal_prod_image: "Image URL",
+    modal_prod_desc: "Description",
+    btn_save_product: "Save Product",
+    cat_fashion: "Fashion",
+    cat_tech: "Technology",
+    cat_flowers: "Flowers",
+    
+    status_pending: "Pending",
+    status_processing: "Processing",
+    status_completed: "Completed",
+    status_cancelled: "Cancelled",
+
+    toast_switch_theme: "Switched to {theme} mode",
+    toast_load_metrics_fail: "Failed to load dashboard metrics",
+    toast_load_orders_fail: "Failed to load shop orders",
+    toast_load_products_fail: "Failed to load products list",
+    toast_status_updated: "Order {id} updated to {status} 📦",
+    toast_status_update_fail: "Failed to update order status",
+    toast_product_saved: "Product details saved successfully! 🌟",
+    toast_product_save_fail: "Failed to save product details",
+    toast_product_deleted: "Product deleted successfully",
+    toast_product_delete_fail: "Failed to delete product",
+    confirm_delete: "Are you sure you want to delete \"{name}\"?",
+    units: "units",
+    no_sales_data: "No sales data recorded yet.",
+    no_orders_yet: "No customer orders placed yet.",
+    pending_text: "Pending"
+  }
+};
+
+// Helper function to get translation
+function t(key, vars = {}) {
+  const dictionary = TRANSLATIONS[activeLang] || TRANSLATIONS['en'];
+  let text = dictionary[key] || TRANSLATIONS['en'][key] || key;
+  
+  // Replace variables
+  Object.keys(vars).forEach(k => {
+    text = text.replace(`{${k}}`, vars[k]);
+  });
+  return text;
+}
+
+// Function to apply translation to all DOM elements
+function applyLanguage() {
+  // Update document title
+  document.title = t('page_title');
+
+  // Translate all tags with data-translate attribute
+  document.querySelectorAll('[data-translate]').forEach(el => {
+    const key = el.getAttribute('data-translate');
+    el.innerText = t(key);
+  });
+
+  // Translate all inputs with data-translate-placeholder attribute
+  document.querySelectorAll('[data-translate-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-translate-placeholder');
+    el.setAttribute('placeholder', t(key));
+  });
+
+  updateLanguageSwitcherUI();
+
+  // Reload current tab content with new translations
+  if (currentTab === 'analytics') {
+    loadAnalytics();
+  } else if (currentTab === 'orders') {
+    loadOrders();
+  } else if (currentTab === 'products') {
+    loadProducts();
+  }
+}
+
+function setLanguage(lang) {
+  activeLang = lang.toLowerCase();
+  localStorage.setItem('shopky_lang', activeLang);
+  applyLanguage();
+}
+
+function updateLanguageSwitcherUI() {
+  const btnVi = document.getElementById('btn-lang-vi');
+  const btnEn = document.getElementById('btn-lang-en');
+  if (!btnVi || !btnEn) return;
+
+  if (activeLang === 'vi') {
+    btnVi.classList.add('active');
+    btnEn.classList.remove('active');
+  } else {
+    btnEn.classList.add('active');
+    btnVi.classList.remove('active');
+  }
+}
 
 // ==========================================
 // Initialization & Loading
@@ -19,12 +230,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', newTheme);
       localStorage.setItem('aethershop_theme', newTheme);
-      showToast(`Switched to ${newTheme} mode`, 'info');
+      showToast(t('toast_switch_theme', { theme: newTheme }), 'info');
     });
   }
 
   // Load Initial Dashboard Tab
-  await switchTab('analytics');
+  applyLanguage();
 });
 
 // ==========================================
@@ -75,7 +286,7 @@ async function loadAnalytics() {
     document.querySelector('#stat-revenue .stat-value').innerText = stats.totalRevenueVND.toLocaleString('vi-VN') + ' đ';
     document.querySelector('#stat-revenue #stat-revenue-usd').innerText = `$${(stats.totalRevenueVND / 25400).toFixed(2)} USD`;
     document.getElementById('stat-orders-val').innerText = stats.totalOrders;
-    document.getElementById('stat-orders-pending').innerText = `${stats.pendingOrders} Pending`;
+    document.getElementById('stat-orders-pending').innerText = `${stats.pendingOrders} ${t('pending_text')}`;
     document.getElementById('stat-pending-val').innerText = stats.totalOrders - stats.completedOrders; // active processing
     document.getElementById('stat-completed-val').innerText = stats.completedOrders;
 
@@ -84,14 +295,20 @@ async function loadAnalytics() {
     if (popularTbody) {
       popularTbody.innerHTML = '';
       if (stats.topProducts.length === 0) {
-        popularTbody.innerHTML = `<tr><td colspan="3" class="text-center" style="color:var(--text-muted);">No sales data recorded yet.</td></tr>`;
+        popularTbody.innerHTML = `<tr><td colspan="3" class="text-center" style="color:var(--text-muted);">${t('no_sales_data')}</td></tr>`;
       } else {
         stats.topProducts.forEach(p => {
+          // Category translation display
+          let displayedCategory = p.category;
+          if (p.category === 'Fashion') displayedCategory = t('cat_fashion');
+          if (p.category === 'Tech') displayedCategory = t('cat_tech');
+          if (p.category === 'Flowers') displayedCategory = t('cat_flowers');
+
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td class="font-bold">${escapeHTML(p.name)}</td>
-            <td><span class="category-pill">${p.category}</span></td>
-            <td class="text-right font-bold">${p.sales} units</td>
+            <td><span class="category-pill">${displayedCategory}</span></td>
+            <td class="text-right font-bold">${p.sales} ${t('units')}</td>
           `;
           popularTbody.appendChild(tr);
         });
@@ -107,9 +324,9 @@ async function loadAnalytics() {
       const totalSalesSum = Object.values(sales).reduce((sum, val) => sum + val, 0);
 
       const categories = [
-        { name: 'Fashion', color: 'var(--accent-purple)' },
-        { name: 'Tech', color: 'var(--accent-cyan)' },
-        { name: 'Flowers', color: 'var(--accent-yellow)' }
+        { name: 'Fashion', color: 'var(--accent-purple)', label: t('cat_fashion') },
+        { name: 'Tech', color: 'var(--accent-cyan)', label: t('cat_tech') },
+        { name: 'Flowers', color: 'var(--accent-yellow)', label: t('cat_flowers') }
       ];
 
       categories.forEach(cat => {
@@ -121,7 +338,7 @@ async function loadAnalytics() {
         div.innerHTML = `
           <div class="bar-header">
             <span class="dot" style="background-color: ${cat.color}"></span>
-            <span class="label">${cat.name}</span>
+            <span class="label">${cat.label}</span>
             <span class="val">${value.toLocaleString('vi-VN')} đ (${percentage}%)</span>
           </div>
           <div class="bar-track">
@@ -134,7 +351,7 @@ async function loadAnalytics() {
 
   } catch (err) {
     console.error(err);
-    showToast('Failed to load dashboard metrics', 'danger');
+    showToast(t('toast_load_metrics_fail'), 'danger');
   }
 }
 
@@ -152,15 +369,20 @@ async function loadOrders() {
     tbody.innerHTML = '';
 
     if (orders.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8" class="text-center" style="color:var(--text-muted); padding:3rem;">No customer orders placed yet.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center" style="color:var(--text-muted); padding:3rem;">${t('no_orders_yet')}</td></tr>`;
       return;
     }
 
     orders.forEach(order => {
-      const dateStr = new Date(order.createdAt).toLocaleString();
+      const dateStr = new Date(order.createdAt).toLocaleString(activeLang === 'vi' ? 'vi-VN' : 'en-US');
       const itemsList = order.items.map(item => `${item.qty}x ${escapeHTML(item.name)}`).join('<br>');
       const totalText = order.currency === 'VND' ? order.subtotal.toLocaleString('vi-VN') + ' đ' : '$' + order.subtotal.toFixed(2);
       
+      // Payment Method display translation
+      let displayedPayment = order.paymentMethod;
+      if (order.paymentMethod === 'COD') displayedPayment = t('pay_cod');
+      if (order.paymentMethod === 'Bank Transfer') displayedPayment = t('pay_bank');
+
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td class="font-bold" style="color:var(--accent-cyan);">${order.id}</td>
@@ -174,13 +396,13 @@ async function loadOrders() {
         </td>
         <td style="font-size:0.78rem; line-height:1.4;">${itemsList}</td>
         <td class="font-bold">${totalText}</td>
-        <td>${order.paymentMethod}</td>
+        <td>${displayedPayment}</td>
         <td>
           <select class="status-select ${order.status.toLowerCase()}" onchange="updateOrderStatus('${order.id}', this.value)">
-            <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
-            <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
-            <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>Completed</option>
-            <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+            <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>${t('status_pending')}</option>
+            <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>${t('status_processing')}</option>
+            <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>${t('status_completed')}</option>
+            <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>${t('status_cancelled')}</option>
           </select>
         </td>
         <td style="color:var(--text-muted); font-size:0.75rem;">${dateStr}</td>
@@ -190,7 +412,7 @@ async function loadOrders() {
 
   } catch (err) {
     console.error(err);
-    showToast('Failed to load shop orders', 'danger');
+    showToast(t('toast_load_orders_fail'), 'danger');
   }
 }
 
@@ -204,10 +426,17 @@ async function updateOrderStatus(orderId, newStatus) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to update order status');
 
-    showToast(`Order ${orderId} updated to ${newStatus} 📦`, 'success');
+    // Translate displayed status for toast
+    let statusLabel = newStatus;
+    if (newStatus === 'Pending') statusLabel = t('status_pending');
+    if (newStatus === 'Processing') statusLabel = t('status_processing');
+    if (newStatus === 'Completed') statusLabel = t('status_completed');
+    if (newStatus === 'Cancelled') statusLabel = t('status_cancelled');
+
+    showToast(t('toast_status_updated', { id: orderId, status: statusLabel }), 'success');
     await loadOrders(); // reload
   } catch (err) {
-    showToast(err.message, 'danger');
+    showToast(t('toast_status_update_fail'), 'danger');
   }
 }
 
@@ -225,18 +454,24 @@ async function loadProducts() {
     tbody.innerHTML = '';
 
     products.forEach(p => {
+      // Category translation display
+      let displayedCategory = p.category;
+      if (p.category === 'Fashion') displayedCategory = t('cat_fashion');
+      if (p.category === 'Tech') displayedCategory = t('cat_tech');
+      if (p.category === 'Flowers') displayedCategory = t('cat_flowers');
+
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td><img src="${p.image}" alt="${p.name}" class="table-img"></td>
         <td class="font-bold">${escapeHTML(p.name)}</td>
-        <td><span class="category-pill">${p.category}</span></td>
+        <td><span class="category-pill">${displayedCategory}</span></td>
         <td class="font-bold">${p.priceVND.toLocaleString('vi-VN')} đ</td>
         <td class="font-bold">$${p.priceUSD.toFixed(2)}</td>
-        <td class="${p.stock <= 5 ? 'text-danger font-bold' : ''}">${p.stock} units</td>
+        <td class="${p.stock <= 5 ? 'text-danger font-bold' : ''}">${p.stock} ${t('units')}</td>
         <td>⭐ ${p.rating.toFixed(1)}</td>
         <td class="text-center">
           <div style="display:flex; justify-content:center; gap:0.25rem;">
-            <button class="btn-table-action btn-edit-action" onclick="openProductModal('${p.id}')" title="Edit Item">
+            <button class="btn-table-action btn-edit-action" onclick="openProductModal('${p.id}')" title="${t('modal_edit_title')}">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                 <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
@@ -258,7 +493,7 @@ async function loadProducts() {
 
   } catch (err) {
     console.error(err);
-    showToast('Failed to load products list', 'danger');
+    showToast(t('toast_load_products_fail'), 'danger');
   }
 }
 
@@ -274,7 +509,7 @@ function openProductModal(productId = null) {
     const p = products.find(prod => prod.id === productId);
     if (!p) return;
 
-    modalTitle.innerText = `Edit Product Details`;
+    modalTitle.innerText = t('modal_edit_title');
     document.getElementById('product-form-id').value = p.id;
     document.getElementById('product-name').value = p.name;
     document.getElementById('product-category').value = p.category;
@@ -284,7 +519,7 @@ function openProductModal(productId = null) {
     document.getElementById('product-image').value = p.image;
     document.getElementById('product-desc').value = p.description;
   } else {
-    modalTitle.innerText = `Create New Product`;
+    modalTitle.innerText = t('modal_add_title');
   }
 
   const modal = document.getElementById('modal-product');
@@ -323,11 +558,11 @@ async function handleSaveProduct(event) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to save product details');
 
-    showToast(id ? 'Product details updated successfully!' : 'New product created!', 'success');
+    showToast(t('toast_product_saved'), 'success');
     closeModal('modal-product');
     await loadProducts(); // reload
   } catch (err) {
-    showToast(err.message, 'danger');
+    showToast(t('toast_product_save_fail'), 'danger');
   }
 }
 
@@ -335,7 +570,7 @@ async function deleteProduct(productId) {
   const p = products.find(prod => prod.id === productId);
   if (!p) return;
 
-  if (confirm(`Are you sure you want to delete "${p.name}"?`)) {
+  if (confirm(t('confirm_delete', { name: p.name }))) {
     try {
       const res = await fetch(`/api/products/${productId}`, {
         method: 'DELETE'
@@ -343,10 +578,10 @@ async function deleteProduct(productId) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to delete product');
 
-      showToast(`Product deleted successfully`, 'warning');
+      showToast(t('toast_product_deleted'), 'warning');
       await loadProducts(); // reload
     } catch (err) {
-      showToast(err.message, 'danger');
+      showToast(t('toast_product_delete_fail'), 'danger');
     }
   }
 }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ShopKydethuong - Admin Portal</title>
+  <title data-translate="page_title">ShopKydethuong - Admin Portal</title>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,14 +29,20 @@
       
       <div class="header-center">
         <nav class="nav-links">
-          <a href="#" class="active" onclick="switchTab('analytics')">Dashboard</a>
-          <a href="#" onclick="switchTab('orders')">Orders</a>
-          <a href="#" onclick="switchTab('products')">Products</a>
-          <a href="ShopKy" class="nav-storefront">View Storefront</a>
+          <a href="#" class="active" onclick="switchTab('analytics')" data-translate="nav_dashboard">Dashboard</a>
+          <a href="#" onclick="switchTab('orders')" data-translate="nav_orders">Orders</a>
+          <a href="#" onclick="switchTab('products')" data-translate="nav_products">Products</a>
+          <a href="ShopKy" class="nav-storefront" data-translate="nav_storefront">View Storefront</a>
         </nav>
       </div>
 
       <div class="header-right">
+        <!-- Language Switcher -->
+        <div class="currency-switcher">
+          <button id="btn-lang-vi" class="currency-btn active" onclick="setLanguage('vi')">VI</button>
+          <button id="btn-lang-en" class="currency-btn" onclick="setLanguage('en')">EN</button>
+        </div>
+
         <!-- Theme Toggle -->
         <button id="btn-theme-toggle" class="btn-icon" title="Toggle Theme">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -64,7 +70,7 @@
           </svg>
         </div>
         <div class="stat-info">
-          <span class="stat-label">Total Revenue</span>
+          <span class="stat-label" data-translate="stat_revenue">Total Revenue</span>
           <h3 class="stat-value">0 VNĐ</h3>
           <span class="stat-trend" id="stat-revenue-usd">$0.00 USD</span>
         </div>
@@ -79,7 +85,7 @@
           </svg>
         </div>
         <div class="stat-info">
-          <span class="stat-label">Total Orders</span>
+          <span class="stat-label" data-translate="stat_orders">Total Orders</span>
           <h3 class="stat-value" id="stat-orders-val">0</h3>
           <span class="stat-trend text-info" id="stat-orders-pending">0 Pending</span>
         </div>
@@ -93,9 +99,9 @@
           </svg>
         </div>
         <div class="stat-info">
-          <span class="stat-label">Processing Orders</span>
+          <span class="stat-label" data-translate="stat_pending">Processing Orders</span>
           <h3 class="stat-value" id="stat-pending-val">0</h3>
-          <span class="stat-trend text-warning">Awaiting fulfillment</span>
+          <span class="stat-trend text-warning" data-translate="stat_pending_desc">Awaiting fulfillment</span>
         </div>
       </div>
 
@@ -107,9 +113,9 @@
           </svg>
         </div>
         <div class="stat-info">
-          <span class="stat-label">Completed Orders</span>
+          <span class="stat-label" data-translate="stat_completed">Completed Orders</span>
           <h3 class="stat-value" id="stat-completed-val">0</h3>
-          <span class="stat-trend text-success">Shipped successfully</span>
+          <span class="stat-trend text-success" data-translate="stat_completed_desc">Shipped successfully</span>
         </div>
       </div>
     </section>
@@ -123,15 +129,15 @@
           <!-- Left Widget: Popular products sales -->
           <div class="dashboard-card">
             <div class="card-header">
-              <h3>Popular Products</h3>
+              <h3 data-translate="widget_popular_title">Popular Products</h3>
             </div>
             <div class="card-body">
               <table class="admin-table">
                 <thead>
                   <tr>
-                    <th>Product</th>
-                    <th>Category</th>
-                    <th class="text-right">Sales Count</th>
+                    <th data-translate="th_product">Product</th>
+                    <th data-translate="th_category">Category</th>
+                    <th class="text-right" data-translate="th_sales_count">Sales Count</th>
                   </tr>
                 </thead>
                 <tbody id="popular-products-tbody">
@@ -144,7 +150,7 @@
           <!-- Right Widget: Sales by category -->
           <div class="dashboard-card">
             <div class="card-header">
-              <h3>Sales distribution by Category</h3>
+              <h3 data-translate="widget_cat_sales_title">Sales distribution by Category</h3>
             </div>
             <div class="card-body flex-col gap-md">
               <div id="category-sales-list" class="category-sales-list">
@@ -159,20 +165,20 @@
       <section id="tab-orders" class="admin-tab-content">
         <div class="dashboard-card">
           <div class="card-header flex-row justify-between align-center">
-            <h3>Manage Shop Orders</h3>
+            <h3 data-translate="orders_title">Manage Shop Orders</h3>
           </div>
           <div class="card-body overflow-x-auto">
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th>Order ID</th>
-                  <th>Customer</th>
-                  <th>Contact Details</th>
-                  <th>Items Purchased</th>
-                  <th>Total Payable</th>
-                  <th>Payment</th>
-                  <th>Status</th>
-                  <th>Created Date</th>
+                  <th data-translate="th_order_id">Order ID</th>
+                  <th data-translate="th_customer">Customer</th>
+                  <th data-translate="th_contact">Contact Details</th>
+                  <th data-translate="th_items">Items Purchased</th>
+                  <th data-translate="th_total">Total Payable</th>
+                  <th data-translate="th_payment">Payment</th>
+                  <th data-translate="th_status">Status</th>
+                  <th data-translate="th_date">Created Date</th>
                 </tr>
               </thead>
               <tbody id="orders-tbody">
@@ -187,21 +193,21 @@
       <section id="tab-products" class="admin-tab-content">
         <div class="dashboard-card">
           <div class="card-header flex-row justify-between align-center">
-            <h3>Product Catalogue CRUD</h3>
-            <button class="btn-primary btn-add-prod" onclick="openProductModal()">Add New Product</button>
+            <h3 data-translate="products_title">Product Catalogue CRUD</h3>
+            <button class="btn-primary btn-add-prod" onclick="openProductModal()" data-translate="btn_add_product">Add New Product</button>
           </div>
           <div class="card-body overflow-x-auto">
             <table class="admin-table">
               <thead>
                 <tr>
-                  <th>Image</th>
-                  <th>Name</th>
-                  <th>Category</th>
-                  <th>Price (VND)</th>
-                  <th>Price (USD)</th>
-                  <th>Stock Count</th>
-                  <th>Rating</th>
-                  <th class="text-center">Actions</th>
+                  <th data-translate="th_image">Image</th>
+                  <th data-translate="th_name">Name</th>
+                  <th data-translate="th_category">Category</th>
+                  <th data-translate="th_price_vnd">Price (VND)</th>
+                  <th data-translate="th_price_usd">Price (USD)</th>
+                  <th data-translate="th_stock">Stock Count</th>
+                  <th data-translate="th_rating">Rating</th>
+                  <th class="text-center" data-translate="th_actions">Actions</th>
                 </tr>
               </thead>
               <tbody id="products-tbody">
@@ -216,7 +222,7 @@
 
     <!-- FOOTER -->
     <footer class="shop-footer">
-      <p>&copy; 2026 ShopKydethuong Admin Dashboard. Control center. All rights reserved.</p>
+      <p data-translate="footer_text">&copy; 2026 ShopKydethuong Admin Dashboard. Control center. All rights reserved.</p>
     </footer>
 
   </div>
@@ -227,7 +233,7 @@
   <div id="modal-product" class="modal-overlay">
     <div class="modal-container form-modal">
       <div class="modal-header">
-        <h2 id="product-modal-title">Create New Product</h2>
+        <h2 id="product-modal-title" data-translate="modal_add_title">Create New Product</h2>
         <button class="btn-modal-close" onclick="closeModal('modal-product')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -240,47 +246,47 @@
           <input type="hidden" id="product-form-id">
           
           <div class="form-group">
-            <label for="product-name">Product Name</label>
+            <label for="product-name" data-translate="modal_prod_name">Product Name</label>
             <input type="text" id="product-name" required placeholder="e.g. Vintage Leather Boots">
           </div>
 
           <div class="form-row">
             <div class="form-group">
-              <label for="product-category">Category</label>
+              <label for="product-category" data-translate="modal_prod_category">Category</label>
               <select id="product-category">
-                <option value="Fashion">Fashion</option>
-                <option value="Tech">Technology</option>
-                <option value="Flowers">Flowers</option>
+                <option value="Fashion" data-translate="cat_fashion">Fashion</option>
+                <option value="Tech" data-translate="cat_tech">Technology</option>
+                <option value="Flowers" data-translate="cat_flowers">Flowers</option>
               </select>
             </div>
             <div class="form-group">
-              <label for="product-stock">Stock Level</label>
+              <label for="product-stock" data-translate="modal_prod_stock">Stock Level</label>
               <input type="number" id="product-stock" required min="0" value="10">
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group">
-              <label for="product-price-vnd">Price in VND (đ)</label>
+              <label for="product-price-vnd" data-translate="modal_price_vnd">Price in VND (đ)</label>
               <input type="number" id="product-price-vnd" required min="0" placeholder="e.g. 550000">
             </div>
             <div class="form-group">
-              <label for="product-price-usd">Price in USD ($)</label>
+              <label for="product-price-usd" data-translate="modal_price_usd">Price in USD ($)</label>
               <input type="number" id="product-price-usd" required min="0" placeholder="e.g. 22">
             </div>
           </div>
 
           <div class="form-group">
-            <label for="product-image">Image URL</label>
+            <label for="product-image" data-translate="modal_prod_image">Image URL</label>
             <input type="text" id="product-image" required placeholder="https://images.unsplash.com/photo-...">
           </div>
 
           <div class="form-group">
-            <label for="product-desc">Description</label>
+            <label for="product-desc" data-translate="modal_prod_desc">Description</label>
             <textarea id="product-desc" rows="4" required placeholder="Write product material, design, accessories..."></textarea>
           </div>
 
-          <button type="submit" class="btn-primary btn-submit-product">Save Product</button>
+          <button type="submit" class="btn-primary btn-submit-product" data-translate="btn_save_product">Save Product</button>
         </form>
       </div>
     </div>

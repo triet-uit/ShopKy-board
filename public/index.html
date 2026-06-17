@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ShopKy - Premium Fashion, Tech & Flowers</title>
+  <title data-translate="page_title">ShopKy - Premium Fashion, Tech & Flowers</title>
   <!-- Google Fonts: Outfit and Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,13 +31,19 @@
       
       <div class="header-center">
         <nav class="nav-links">
-          <a href="#" class="active" onclick="showCatalog()">Shop</a>
-          <a href="#" onclick="openTrackOrderModal()">Track Order</a>
-          <a href="ShopKydethuong" class="nav-admin">Admin Portal</a>
+          <a href="#" class="active" onclick="showCatalog()" data-translate="nav_shop">Shop</a>
+          <a href="#" onclick="openTrackOrderModal()" data-translate="nav_track">Track Order</a>
+          <a href="ShopKydethuong" class="nav-admin" data-translate="nav_admin">Admin Portal</a>
         </nav>
       </div>
 
       <div class="header-right">
+        <!-- Language Switcher -->
+        <div class="currency-switcher">
+          <button id="btn-lang-vi" class="currency-btn active" onclick="setLanguage('vi')">VI</button>
+          <button id="btn-lang-en" class="currency-btn" onclick="setLanguage('en')">EN</button>
+        </div>
+
         <!-- Currency Switcher -->
         <div class="currency-switcher">
           <button id="btn-currency-vnd" class="currency-btn active" onclick="setCurrency('VND')">VND</button>
@@ -74,8 +80,8 @@
     <!-- HERO SECTION -->
     <section class="hero-section">
       <div class="hero-content">
-        <h2>Modern Curated Shopping</h2>
-        <p>Explore premium fashion wear, state-of-the-art tech gadgets, and fresh sunset flowers.</p>
+        <h2 data-translate="hero_title">Modern Curated Shopping</h2>
+        <p data-translate="hero_subtitle">Explore premium fashion wear, state-of-the-art tech gadgets, and fresh sunset flowers.</p>
         
         <!-- Search Bar -->
         <div class="search-container">
@@ -83,7 +89,7 @@
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
           </svg>
-          <input type="text" id="search-input" placeholder="Search catalog for jackets, headphones, roses..." oninput="handleSearch()">
+          <input type="text" id="search-input" placeholder="Search catalog for jackets, headphones, roses..." oninput="handleSearch()" data-translate-placeholder="search_placeholder">
         </div>
       </div>
     </section>
@@ -92,10 +98,10 @@
     <main class="shop-main">
       <!-- Catalog Filters -->
       <div class="catalog-filters">
-        <button class="filter-tab active" data-category="All" onclick="filterCategory('All')">All Products</button>
-        <button class="filter-tab" data-category="Fashion" onclick="filterCategory('Fashion')">Fashion</button>
-        <button class="filter-tab" data-category="Tech" onclick="filterCategory('Tech')">Technology</button>
-        <button class="filter-tab" data-category="Flowers" onclick="filterCategory('Flowers')">Flowers</button>
+        <button class="filter-tab active" data-category="All" onclick="filterCategory('All')" data-translate="cat_all">All Products</button>
+        <button class="filter-tab" data-category="Fashion" onclick="filterCategory('Fashion')" data-translate="cat_fashion">Fashion</button>
+        <button class="filter-tab" data-category="Tech" onclick="filterCategory('Tech')" data-translate="cat_tech">Technology</button>
+        <button class="filter-tab" data-category="Flowers" onclick="filterCategory('Flowers')" data-translate="cat_flowers">Flowers</button>
       </div>
 
       <!-- Products Grid -->
@@ -106,7 +112,7 @@
 
     <!-- FOOTER -->
     <footer class="shop-footer">
-      <p>&copy; 2026 ShopKy. Made with premium glassmorphic aesthetics. All rights reserved.</p>
+      <p data-translate="footer_text">&copy; 2026 ShopKy. Made with premium glassmorphic aesthetics. All rights reserved.</p>
     </footer>
 
   </div>
@@ -116,7 +122,7 @@
        ========================================================================== -->
   <div id="cart-drawer" class="cart-drawer">
     <div class="cart-drawer-header">
-      <h3>Shopping Cart</h3>
+      <h3 data-translate="cart_title">Shopping Cart</h3>
       <button class="btn-close" onclick="toggleCart(false)" title="Close Cart">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -133,10 +139,10 @@
     <!-- Cart Footer Summary -->
     <div class="cart-drawer-footer">
       <div class="summary-row">
-        <span>Subtotal</span>
+        <span data-translate="cart_subtotal">Subtotal</span>
         <span id="cart-subtotal" class="subtotal-val">$0.00</span>
       </div>
-      <button id="btn-checkout-proceed" class="btn-checkout" onclick="openCheckoutModal()">Proceed to Checkout</button>
+      <button id="btn-checkout-proceed" class="btn-checkout" onclick="openCheckoutModal()" data-translate="cart_checkout">Proceed to Checkout</button>
     </div>
   </div>
   <div id="cart-drawer-overlay" class="drawer-overlay" onclick="toggleCart(false)"></div>
@@ -168,11 +174,11 @@
           <p id="detail-product-desc" class="product-description">Description text...</p>
           <div class="price-stock-row">
             <div class="price-box">
-              <span class="price-label">Price</span>
+              <span class="price-label" data-translate="detail_price_label">Price</span>
               <h3 id="detail-product-price">$0.00</h3>
             </div>
             <div class="stock-box">
-              <span class="stock-label">Availability</span>
+              <span class="stock-label" data-translate="detail_stock_label">Availability</span>
               <span id="detail-product-stock" class="stock-badge">In Stock</span>
             </div>
           </div>
@@ -182,7 +188,7 @@
               <input type="number" id="detail-qty-input" value="1" min="1">
               <button onclick="changeDetailQty(1)">+</button>
             </div>
-            <button id="btn-detail-add-to-cart" class="btn-primary flex-grow">Add to Cart</button>
+            <button id="btn-detail-add-to-cart" class="btn-primary flex-grow" data-translate="detail_add_to_cart">Add to Cart</button>
           </div>
         </div>
       </div>
@@ -195,7 +201,7 @@
   <div id="modal-checkout" class="modal-overlay">
     <div class="modal-container checkout-modal">
       <div class="modal-header">
-        <h2>Checkout Details</h2>
+        <h2 data-translate="checkout_title">Checkout Details</h2>
         <button class="btn-modal-close" onclick="closeModal('modal-checkout')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -206,38 +212,38 @@
       <div class="modal-body checkout-body-grid">
         <form id="checkout-form" onsubmit="handleCheckout(event)">
           <div class="form-group">
-            <label for="checkout-name">Full Name</label>
-            <input type="text" id="checkout-name" required placeholder="John Doe">
+            <label for="checkout-name" data-translate="checkout_name">Full Name</label>
+            <input type="text" id="checkout-name" required placeholder="John Doe" data-translate-placeholder="checkout_name_placeholder">
           </div>
           <div class="form-group">
-            <label for="checkout-phone">Phone Number</label>
-            <input type="text" id="checkout-phone" required placeholder="0987654321">
+            <label for="checkout-phone" data-translate="checkout_phone">Phone Number</label>
+            <input type="text" id="checkout-phone" required placeholder="0987654321" data-translate-placeholder="checkout_phone_placeholder">
           </div>
           <div class="form-group">
-            <label for="checkout-email">Email Address</label>
-            <input type="email" id="checkout-email" required placeholder="john@example.com">
+            <label for="checkout-email" data-translate="checkout_email">Email Address</label>
+            <input type="email" id="checkout-email" required placeholder="john@example.com" data-translate-placeholder="checkout_email_placeholder">
           </div>
           <div class="form-group">
-            <label for="checkout-address">Shipping Address</label>
-            <input type="text" id="checkout-address" required placeholder="123 Street Name, Ward, District, City">
+            <label for="checkout-address" data-translate="checkout_address">Shipping Address</label>
+            <input type="text" id="checkout-address" required placeholder="123 Street Name, Ward, District, City" data-translate-placeholder="checkout_address_placeholder">
           </div>
           <div class="form-group">
-            <label for="checkout-payment">Payment Method</label>
+            <label for="checkout-payment" data-translate="checkout_payment">Payment Method</label>
             <select id="checkout-payment">
-              <option value="COD">Cash on Delivery (COD)</option>
-              <option value="Bank Transfer">Bank Transfer (Simulated QR)</option>
+              <option value="COD" data-translate="pay_cod">Cash on Delivery (COD)</option>
+              <option value="Bank Transfer" data-translate="pay_bank">Bank Transfer (Simulated QR)</option>
             </select>
           </div>
-          <button type="submit" class="btn-primary btn-submit-checkout">Place Order</button>
+          <button type="submit" class="btn-primary btn-submit-checkout" data-translate="btn_place_order">Place Order</button>
         </form>
         
         <div class="checkout-summary-box">
-          <h3>Order Summary</h3>
+          <h3 data-translate="summary_title">Order Summary</h3>
           <div id="checkout-summary-list" class="checkout-summary-list">
             <!-- Dynamic items list -->
           </div>
           <div class="checkout-total-row">
-            <span>Total Payable</span>
+            <span data-translate="summary_total">Total Payable</span>
             <span id="checkout-total-val">$0.00</span>
           </div>
         </div>
@@ -256,29 +262,29 @@
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
         </div>
-        <h2>Order Placed Successfully!</h2>
-        <p>Thank you for purchasing. Your order has been registered in our system.</p>
+        <h2 data-translate="success_title">Order Placed Successfully!</h2>
+        <p data-translate="success_subtitle">Thank you for purchasing. Your order has been registered in our system.</p>
         
         <div class="receipt-card">
           <div class="receipt-row">
-            <span class="label">Order ID</span>
+            <span class="label" data-translate="success_order_id">Order ID</span>
             <span id="receipt-order-id" class="val">ord-172324...</span>
           </div>
           <div class="receipt-row">
-            <span class="label">Total Paid</span>
+            <span class="label" data-translate="success_total_paid">Total Paid</span>
             <span id="receipt-total" class="val">$0.00</span>
           </div>
           <div class="receipt-row">
-            <span class="label">Payment Method</span>
+            <span class="label" data-translate="success_payment">Payment Method</span>
             <span id="receipt-payment" class="val">COD</span>
           </div>
           <div class="receipt-row">
-            <span class="label">Deliver To</span>
+            <span class="label" data-translate="success_deliver_to">Deliver To</span>
             <span id="receipt-name" class="val">John Doe</span>
           </div>
         </div>
 
-        <button class="btn-primary" onclick="closeOrderSuccess()">Continue Shopping</button>
+        <button class="btn-primary" onclick="closeOrderSuccess()" data-translate="success_continue">Continue Shopping</button>
       </div>
     </div>
   </div>
@@ -289,7 +295,7 @@
   <div id="modal-track-order" class="modal-overlay">
     <div class="modal-container track-modal">
       <div class="modal-header">
-        <h2>Track Order Status</h2>
+        <h2 data-translate="track_title">Track Order Status</h2>
         <button class="btn-modal-close" onclick="closeModal('modal-track-order')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -299,8 +305,8 @@
       </div>
       <div class="modal-body">
         <div class="form-row">
-          <input type="text" id="track-order-id-input" placeholder="Enter Order ID (e.g. ord-172324...)">
-          <button class="btn-primary" onclick="handleTrackOrder()">Search</button>
+          <input type="text" id="track-order-id-input" placeholder="Enter Order ID (e.g. ord-172324...)" data-translate-placeholder="track_placeholder">
+          <button class="btn-primary" onclick="handleTrackOrder()" data-translate="btn_search">Search</button>
         </div>
         <div id="track-order-result" class="track-order-result">
           <!-- Dynamic Order Track Details -->
