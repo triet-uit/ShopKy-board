@@ -711,7 +711,7 @@ async function handleCheckout(event) {
           qrImg.src = vietQRUrl;
         } else if (data.paymentMethod === 'MoMo') {
           // MoMo transfer URL with payment qr server
-          const momoPayUrl = `https://nhantien.momo.vn/0346099001/${amountInVND}`;
+          const momoPayUrl = `https://nhantien.momo.vn/0345426329`;
           const qrServerUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(momoPayUrl)}`;
           qrImg.src = qrServerUrl;
         }

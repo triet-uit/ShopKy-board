@@ -8,7 +8,7 @@
       "priceUSD": 49,
       "image": "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&auto=format&fit=crop&q=80",
       "category": "Fashion",
-      "stock": 15,
+      "stock": 14,
       "rating": 4.8
     },
     {
@@ -100,7 +100,36 @@
       "rating": 4.7
     }
   ],
-  "orders": [],
+  "orders": [
+    {
+      "id": "ord-1781688766603",
+      "customer": {
+        "name": "Test Customer",
+        "phone": "0123456789",
+        "email": "",
+        "address": "123 Test St"
+      },
+      "items": [
+        {
+          "id": "prod-1",
+          "name": "Urban Leather Jacket",
+          "qty": 1,
+          "price": 1250000,
+          "currency": "VND"
+        }
+      ],
+      "subtotal": 1250000,
+      "currency": "VND",
+      "paymentMethod": "Bank Transfer",
+      "status": "Pending",
+      "createdAt": "2026-06-17T09:32:46.603Z",
+      "paymentProof": {
+        "text": "Test note 123",
+        "image": "",
+        "submittedAt": "2026-06-17T09:34:18.206Z"
+      }
+    }
+  ],
   "settings": {
     "exchangeRate": 25400,
     "shopName": "ShopKy"
