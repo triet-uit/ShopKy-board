@@ -892,7 +892,7 @@ async function submitPaymentProof() {
     }
 
     try {
-      proofImage = await readFileAsBase64(file);
+      proofImage = await resizeAndCompressImage(file, 500, 500, 0.45);
     } catch (err) {
       showToast(t('toast_proof_failed'), 'danger');
       submitBtn.disabled = false;
@@ -948,11 +948,41 @@ async function submitPaymentProof() {
   }
 }
 
-function readFileAsBase64(file) {
+function resizeAndCompressImage(file, maxWidth = 500, maxHeight = 500, quality = 0.45) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
+    reader.onload = function (e) {
+      const img = new Image();
+      img.onload = function () {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        // Calculate proportions
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Export as JPEG with compression quality
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = (err) => reject(err);
+      img.src = e.target.result;
+    };
+    reader.onerror = (err) => reject(err);
     reader.readAsDataURL(file);
   });
 }
