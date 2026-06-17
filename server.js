@@ -262,14 +262,17 @@ const server = http.createServer((req, res) => {
           }
 
           // Validate and deduct stock
+          const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
           for (const item of orderPayload.items) {
             const product = db.products.find(p => p.id === item.id);
             if (!product) {
+              console.warn(`[ORDER] Failed: Product "${item.name}" not found. IP: ${clientIp}`);
               res.writeHead(400, { 'Content-Type': 'application/json' });
               res.end(JSON.stringify({ error: `Product ${item.name} not found` }));
               return;
             }
             if (product.stock < item.qty) {
+              console.warn(`[ORDER] Failed: Insufficient stock for "${item.name}". Requested: ${item.qty}, Remaining: ${product.stock}. IP: ${clientIp}`);
               res.writeHead(400, { 'Content-Type': 'application/json' });
               res.end(JSON.stringify({ error: `Insufficient stock for ${item.name}. Remaining: ${product.stock}` }));
               return;
@@ -292,9 +295,11 @@ const server = http.createServer((req, res) => {
 
           writeDb(db, (writeErr) => {
             if (writeErr) {
+              console.error(`[ORDER] Error: Failed to write database for order "${newOrder.id}".`, writeErr);
               res.writeHead(500, { 'Content-Type': 'application/json' });
               res.end(JSON.stringify({ error: 'Database write failed' }));
             } else {
+              console.log(`[ORDER] Success: New order "${newOrder.id}" placed by "${newOrder.customer.name}" (${newOrder.customer.phone}) from IP ${clientIp} at ${new Date().toLocaleString('vi-VN', {timeZone: 'Asia/Ho_Chi_Minh'})}. Total: ${newOrder.subtotal} ${newOrder.currency}.`);
               res.writeHead(201, { 'Content-Type': 'application/json' });
               res.end(JSON.stringify(newOrder));
             }
