@@ -376,9 +376,16 @@ const server = http.createServer((req, res) => {
   }
 
   // ==========================================
-  // Static File Server
+  // Static File Server & Custom Routes
   // ==========================================
-  let filePath = path.join(PUBLIC_DIR, pathname === '/' ? 'index.html' : pathname);
+  let targetFile = pathname;
+  if (pathname === '/' || pathname === '/ShopKy') {
+    targetFile = 'index.html';
+  } else if (pathname === '/ShopKydethuong') {
+    targetFile = 'admin.html';
+  }
+
+  let filePath = path.join(PUBLIC_DIR, targetFile);
 
   // Prevent path traversal
   const relative = path.relative(PUBLIC_DIR, filePath);
@@ -409,6 +416,6 @@ const server = http.createServer((req, res) => {
 
 // Start listening
 server.listen(PORT, () => {
-  console.log(`AetherShop server running at http://localhost:${PORT}/`);
+  console.log(`ShopKy server running at http://localhost:${PORT}/ShopKy`);
   console.log(`Database stored at: ${DATA_FILE}`);
 });
