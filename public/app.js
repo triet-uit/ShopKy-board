@@ -7,6 +7,7 @@ let activeLang = localStorage.getItem('shopky_lang') || 'vi';
 let activeCategory = 'All';
 let searchQuery = '';
 let selectedDetailProduct = null;
+let currentOrderId = null;
 
 // ==========================================
 // Translation Dictionary (i18n)
@@ -44,7 +45,16 @@ const TRANSLATIONS = {
     checkout_address_placeholder: "Số 123 Đường, Phường, Quận, Thành phố",
     checkout_payment: "Phương thức thanh toán",
     pay_cod: "Thanh toán khi nhận hàng (COD)",
-    pay_bank: "Chuyển khoản ngân hàng (Quét mã QR)",
+    pay_bank: "Chuyển khoản ngân hàng (VietQR)",
+    pay_momo: "Ví MoMo",
+    qr_title_pay: "Hãy quét mã QR bên dưới để thanh toán",
+    label_proof_text: "Nội dung lời nhắn chuyển khoản / Mã giao dịch",
+    placeholder_proof_text: "Ví dụ: Mã giao dịch hoặc ghi chú...",
+    label_proof_file: "Tải lên ảnh chụp màn hình chuyển khoản thành công",
+    btn_confirm_paid: "Xác nhận đã thanh toán",
+    toast_proof_submitted: "Đã gửi bằng chứng thanh toán thành công! 🌟",
+    toast_proof_failed: "Gửi bằng chứng thanh toán thất bại.",
+    toast_uploading: "Đang tải ảnh bằng chứng thanh toán...",
     btn_place_order: "Đặt hàng ngay",
     summary_title: "Tóm tắt đơn hàng",
     summary_total: "Tổng số tiền cần trả",
@@ -105,9 +115,17 @@ const TRANSLATIONS = {
     checkout_email_placeholder: "john@example.com",
     checkout_address: "Shipping Address",
     checkout_address_placeholder: "123 Street Name, Ward, District, City",
-    checkout_payment: "Payment Method",
     pay_cod: "Cash on Delivery (COD)",
-    pay_bank: "Bank Transfer (Simulated QR)",
+    pay_bank: "Bank Transfer (VietQR)",
+    pay_momo: "MoMo Wallet",
+    qr_title_pay: "Please scan the QR code below to pay",
+    label_proof_text: "Transaction Message / Notes (Transaction ID)",
+    placeholder_proof_text: "e.g. Transaction ID, transfer note...",
+    label_proof_file: "Upload Payment Receipt Screenshot",
+    btn_confirm_paid: "Confirm Payment",
+    toast_proof_submitted: "Payment proof submitted successfully! 🌟",
+    toast_proof_failed: "Failed to submit payment proof.",
+    toast_uploading: "Uploading payment screenshot...",
     btn_place_order: "Place Order",
     summary_title: "Order Summary",
     summary_total: "Total Payable",
@@ -634,6 +652,8 @@ async function handleCheckout(event) {
     // Show Success Modal
     closeModal('modal-checkout');
     
+    currentOrderId = data.id; // Store order ID globally
+    
     document.getElementById('receipt-order-id').innerText = data.id;
     document.getElementById('receipt-total').innerText = formatValue(data.subtotal, data.currency);
     
@@ -641,9 +661,62 @@ async function handleCheckout(event) {
     let displayedPayment = data.paymentMethod;
     if (data.paymentMethod === 'COD') displayedPayment = t('pay_cod');
     if (data.paymentMethod === 'Bank Transfer') displayedPayment = t('pay_bank');
+    if (data.paymentMethod === 'MoMo') displayedPayment = t('pay_momo');
     document.getElementById('receipt-payment').innerText = displayedPayment;
 
     document.getElementById('receipt-name').innerText = data.customer.name;
+
+    // Reset and build payment QR display
+    const qrSection = document.getElementById('qr-payment-section');
+    const continueBtn = document.getElementById('btn-success-continue');
+    
+    if (data.paymentMethod === 'COD') {
+      if (qrSection) qrSection.style.display = 'none';
+      if (continueBtn) continueBtn.style.display = 'block';
+    } else {
+      if (qrSection) {
+        qrSection.style.display = 'block';
+        // Reset QR section HTML to original input form
+        qrSection.innerHTML = `
+          <h3 style="font-size: 1rem; font-weight:700; margin-bottom: 0.5rem; font-family: var(--font-family-title);" data-translate="qr_title_pay">${t('qr_title_pay')}</h3>
+          
+          <div class="qr-code-box" style="display:flex; justify-content:center; margin-bottom: 1rem;">
+            <img id="payment-qr-img" src="" alt="Payment QR" style="max-width: 200px; border-radius: 12px; border: 1px solid var(--border-glass);">
+          </div>
+          
+          <div class="proof-form" style="display:flex; flex-direction:column; gap:0.75rem; text-align: left;">
+            <div class="form-group">
+              <label style="font-size: 0.8rem; font-weight:600; color: var(--text-secondary);" data-translate="label_proof_text">${t('label_proof_text')}</label>
+              <input type="text" id="proof-text-input" value="${data.id}" placeholder="${t('placeholder_proof_text')}" style="width:100%; padding:0.6rem; border-radius:8px; border:1px solid var(--border-glass); background:var(--bg-input); color:var(--text-main);">
+            </div>
+            
+            <div class="form-group">
+              <label style="font-size: 0.8rem; font-weight:600; color: var(--text-secondary);" data-translate="label_proof_file">${t('label_proof_file')}</label>
+              <input type="file" id="proof-file-input" accept="image/*" style="width:100%; font-size:0.8rem; margin-top:0.25rem;">
+            </div>
+            
+            <button id="btn-submit-proof" class="btn-primary" onclick="submitPaymentProof()" style="width: 100%; padding: 0.65rem;" data-translate="btn_confirm_paid">${t('btn_confirm_paid')}</button>
+          </div>
+        `;
+      }
+      if (continueBtn) continueBtn.style.display = 'none';
+
+      // Generate dynamic QR code URL
+      const amountInVND = data.currency === 'USD' ? Math.round(data.subtotal * 25400) : data.subtotal;
+      const qrImg = document.getElementById('payment-qr-img');
+      if (qrImg) {
+        if (data.paymentMethod === 'Bank Transfer') {
+          // VietQR: Bank ID (VCB), Account No (0381000579717), template (compact), name (VO DINH TRIET)
+          const vietQRUrl = `https://img.vietqr.io/image/VCB-0381000579717-compact.png?amount=${amountInVND}&addInfo=${encodeURIComponent(data.id)}&accountName=${encodeURIComponent('VO DINH TRIET')}`;
+          qrImg.src = vietQRUrl;
+        } else if (data.paymentMethod === 'MoMo') {
+          // MoMo transfer URL with payment qr server
+          const momoPayUrl = `https://nhantien.momo.vn/0346099001/${amountInVND}`;
+          const qrServerUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(momoPayUrl)}`;
+          qrImg.src = qrServerUrl;
+        }
+      }
+    }
 
     openModal('modal-order-success');
     
@@ -788,3 +861,101 @@ function showToast(message, type = 'info') {
     toast.remove();
   }, 3000);
 }
+
+// ==========================================
+// Payment Transfer Proof Submission
+// ==========================================
+async function submitPaymentProof() {
+  if (!currentOrderId) {
+    showToast(t('toast_proof_failed'), 'danger');
+    return;
+  }
+
+  const proofText = document.getElementById('proof-text-input').value.trim();
+  const fileInput = document.getElementById('proof-file-input');
+  
+  const submitBtn = document.getElementById('btn-submit-proof');
+  const originalBtnText = submitBtn.innerText;
+  
+  submitBtn.disabled = true;
+  submitBtn.innerText = t('toast_uploading');
+
+  let proofImage = '';
+
+  if (fileInput.files && fileInput.files[0]) {
+    const file = fileInput.files[0];
+    
+    // Check file size, limit to 2MB to keep db payload compact
+    if (file.size > 2 * 1024 * 1024) {
+      showToast(activeLang === 'vi' ? 'Dung lượng ảnh phải dưới 2MB' : 'Image size must be under 2MB', 'danger');
+      submitBtn.disabled = false;
+      submitBtn.innerText = originalBtnText;
+      return;
+    }
+
+    try {
+      proofImage = await readFileAsBase64(file);
+    } catch (err) {
+      showToast(t('toast_proof_failed'), 'danger');
+      submitBtn.disabled = false;
+      submitBtn.innerText = originalBtnText;
+      return;
+    }
+  }
+
+  // If both are empty, prevent submission
+  if (!proofText && !proofImage) {
+    showToast(activeLang === 'vi' ? 'Vui lòng nhập ghi chú hoặc tải lên ảnh chuyển khoản.' : 'Please enter notes or upload transfer photo.', 'warning');
+    submitBtn.disabled = false;
+    submitBtn.innerText = originalBtnText;
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/orders/${currentOrderId}/payment-proof`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ proofText, proofImage })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to submit payment proof');
+
+    showToast(t('toast_proof_submitted'), 'success');
+    
+    // Hide payment QR form section and show confirmation message
+    const qrSection = document.getElementById('qr-payment-section');
+    if (qrSection) {
+      qrSection.innerHTML = `
+        <div style="text-align: center; padding: 1.5rem 0; color: var(--accent-green);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width:48px; height:48px; margin-bottom: 0.5rem; display: inline-block;">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <h4 style="font-weight: 700; margin-bottom: 0.25rem;">${activeLang === 'vi' ? 'Đã gửi minh chứng!' : 'Proof Submitted!'}</h4>
+          <p style="font-size: 0.85rem; color: var(--text-secondary);">${activeLang === 'vi' ? 'Quản trị viên sẽ sớm kiểm tra đơn hàng của bạn.' : 'An administrator will review your order details soon.'}</p>
+        </div>
+      `;
+    }
+    
+    // Show the "Continue Shopping" button
+    const continueBtn = document.getElementById('btn-success-continue');
+    if (continueBtn) {
+      continueBtn.style.display = 'block';
+    }
+
+  } catch (err) {
+    showToast(err.message || t('toast_proof_failed'), 'danger');
+    submitBtn.disabled = false;
+    submitBtn.innerText = originalBtnText;
+  }
+}
+
+function readFileAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+    reader.readAsDataURL(file);
+  });
+}
+

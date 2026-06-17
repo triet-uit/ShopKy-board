@@ -292,6 +292,47 @@
     </div>
   </div>
 
+  <!-- ==========================================================================
+       MODAL: VIEW PAYMENT PROOF
+       ========================================================================== -->
+  <div id="modal-payment-proof" class="modal-overlay">
+    <div class="modal-container form-modal" style="max-width: 500px; width: 100%;">
+      <div class="modal-header">
+        <h2 data-translate="modal_proof_title">Payment Proof Details</h2>
+        <button class="btn-modal-close" onclick="closeModal('modal-payment-proof')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 1rem; padding: 1.5rem;">
+        <div>
+          <span style="font-size: 0.8rem; font-weight:600; color: var(--text-muted);" data-translate="th_order_id">Order ID</span>
+          <div id="proof-modal-order-id" class="font-bold" style="color: var(--accent-cyan); font-size: 1.1rem; margin-top: 0.2rem;">ord-123456</div>
+        </div>
+        
+        <div>
+          <span style="font-size: 0.8rem; font-weight:600; color: var(--text-muted);" data-translate="modal_proof_note">Customer Notes</span>
+          <div id="proof-modal-note" style="background: var(--bg-input); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-glass); margin-top: 0.25rem; font-size: 0.9rem; white-space: pre-wrap; word-break: break-all; color: var(--text-main);"></div>
+        </div>
+
+        <div>
+          <span style="font-size: 0.8rem; font-weight:600; color: var(--text-muted);" data-translate="modal_proof_date">Submitted At</span>
+          <div id="proof-modal-date" style="font-size: 0.85rem; margin-top: 0.25rem; color: var(--text-main);"></div>
+        </div>
+
+        <div>
+          <span style="font-size: 0.8rem; font-weight:600; color: var(--text-muted);" data-translate="modal_proof_img">Transaction Screenshot</span>
+          <div style="margin-top: 0.5rem; text-align: center; border: 1px dashed var(--border-glass); border-radius: 12px; padding: 0.5rem; background: rgba(255,255,255,0.02); min-height: 150px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            <img id="proof-modal-img" src="" alt="Payment Proof Image" style="max-width: 100%; max-height: 350px; border-radius: 8px; display: none; object-fit: contain;">
+            <div id="proof-modal-no-img" style="color: var(--text-muted); font-size: 0.85rem;" data-translate="modal_proof_no_img">No screenshot uploaded</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Dynamic notification toast wrapper -->
   <div class="toast-container" id="toast-container"></div>
 

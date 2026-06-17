@@ -79,7 +79,15 @@ const TRANSLATIONS = {
     units: "sản phẩm",
     no_sales_data: "Chưa ghi nhận số liệu bán hàng.",
     no_orders_yet: "Chưa có đơn hàng nào từ khách.",
-    pending_text: "đang chờ"
+    pending_text: "đang chờ",
+    pay_momo: "Ví MoMo",
+    btn_view_proof: "Xem minh chứng",
+    modal_proof_title: "Chi tiết chuyển khoản",
+    modal_proof_note: "Ghi chú khách hàng",
+    modal_proof_date: "Thời gian gửi",
+    modal_proof_img: "Hình ảnh đối soát",
+    modal_proof_empty: "Chưa gửi minh chứng",
+    modal_proof_no_img: "Không có ảnh đính kèm"
   },
   en: {
     page_title: "ShopKydethuong - Admin Portal",
@@ -150,7 +158,15 @@ const TRANSLATIONS = {
     units: "units",
     no_sales_data: "No sales data recorded yet.",
     no_orders_yet: "No customer orders placed yet.",
-    pending_text: "Pending"
+    pending_text: "Pending",
+    pay_momo: "MoMo Wallet",
+    btn_view_proof: "View Proof",
+    modal_proof_title: "Payment Proof Details",
+    modal_proof_note: "Customer Notes",
+    modal_proof_date: "Submitted At",
+    modal_proof_img: "Transaction Screenshot",
+    modal_proof_empty: "No proof submitted yet",
+    modal_proof_no_img: "No screenshot uploaded"
   }
 };
 
@@ -382,6 +398,30 @@ async function loadOrders() {
       let displayedPayment = order.paymentMethod;
       if (order.paymentMethod === 'COD') displayedPayment = t('pay_cod');
       if (order.paymentMethod === 'Bank Transfer') displayedPayment = t('pay_bank');
+      if (order.paymentMethod === 'MoMo') displayedPayment = t('pay_momo');
+
+      let proofHtml = '';
+      if (order.paymentMethod !== 'COD') {
+        if (order.paymentProof) {
+          proofHtml = `
+            <div style="margin-top: 0.35rem;">
+              <button class="btn-view-proof" onclick="viewPaymentProof('${order.id}')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span style="vertical-align: middle;">${t('btn_view_proof')}</span>
+              </button>
+            </div>
+          `;
+        } else {
+          proofHtml = `
+            <div style="margin-top: 0.35rem; font-size: 0.7rem; color: var(--text-muted); font-style: italic;">
+              ${t('modal_proof_empty')}
+            </div>
+          `;
+        }
+      }
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -396,7 +436,10 @@ async function loadOrders() {
         </td>
         <td style="font-size:0.78rem; line-height:1.4;">${itemsList}</td>
         <td class="font-bold">${totalText}</td>
-        <td>${displayedPayment}</td>
+        <td>
+          <div>${displayedPayment}</div>
+          ${proofHtml}
+        </td>
         <td>
           <select class="status-select ${order.status.toLowerCase()}" onchange="updateOrderStatus('${order.id}', this.value)">
             <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>${t('status_pending')}</option>
@@ -620,3 +663,44 @@ function showToast(message, type = 'info') {
     toast.remove();
   }, 3000);
 }
+
+// ==========================================
+// View Payment Proof Details Modal
+// ==========================================
+function viewPaymentProof(orderId) {
+  const order = orders.find(o => o.id === orderId);
+  if (!order || !order.paymentProof) {
+    showToast(t('modal_proof_empty'), 'warning');
+    return;
+  }
+
+  const proof = order.paymentProof;
+  const noteEl = document.getElementById('proof-modal-note');
+  const imgEl = document.getElementById('proof-modal-img');
+  const dateEl = document.getElementById('proof-modal-date');
+  const idEl = document.getElementById('proof-modal-order-id');
+
+  if (idEl) idEl.innerText = order.id;
+  if (noteEl) noteEl.innerText = proof.text || (activeLang === 'vi' ? '(Không có ghi chú)' : '(No notes)');
+  if (dateEl) {
+    const proofDate = new Date(proof.submittedAt).toLocaleString(activeLang === 'vi' ? 'vi-VN' : 'en-US');
+    dateEl.innerText = proofDate;
+  }
+
+  if (imgEl) {
+    if (proof.image) {
+      imgEl.src = proof.image;
+      imgEl.style.display = 'block';
+      const noImgEl = document.getElementById('proof-modal-no-img');
+      if (noImgEl) noImgEl.style.display = 'none';
+    } else {
+      imgEl.style.display = 'none';
+      const noImgEl = document.getElementById('proof-modal-no-img');
+      if (noImgEl) noImgEl.style.display = 'block';
+    }
+  }
+
+  const modal = document.getElementById('modal-payment-proof');
+  if (modal) modal.classList.add('open');
+}
+

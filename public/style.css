@@ -1418,3 +1418,32 @@ button, select, input, textarea {
 .align-center { align-items: center; }
 .overflow-x-auto { overflow-x: auto; }
 .font-semibold { font-weight: 600; }
+
+/* ==========================================================================
+   VIEW PAYMENT PROOF BUTTON
+   ========================================================================== */
+.btn-view-proof {
+  background: rgba(0, 242, 254, 0.08);
+  border: 1px solid var(--accent-cyan);
+  color: var(--accent-cyan);
+  font-size: 0.72rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s ease;
+  font-family: var(--font-family-body);
+}
+
+.btn-view-proof:hover {
+  background: rgba(0, 242, 254, 0.18);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 242, 254, 0.15);
+}
+
+.btn-view-proof:active {
+  transform: translateY(0);
+}
+

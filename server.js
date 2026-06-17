@@ -367,6 +367,51 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // 7.5. PUT /api/orders/:id/payment-proof (Upload payment proof)
+  if (req.method === 'PUT' && pathname.startsWith('/api/orders/') && pathname.endsWith('/payment-proof')) {
+    const parts = pathname.split('/');
+    const id = parts[3]; // format: /api/orders/:id/payment-proof
+    let body = '';
+    req.on('data', chunk => body += chunk.toString());
+    req.on('end', () => {
+      try {
+        const { proofText, proofImage } = JSON.parse(body);
+        readDb((err, db) => {
+          if (err) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Database read failed' }));
+            return;
+          }
+          const order = db.orders.find(o => o.id === id);
+          if (!order) {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Order not found' }));
+            return;
+          }
+          order.paymentProof = {
+            text: proofText || '',
+            image: proofImage || '', // base64 string
+            submittedAt: new Date().toISOString()
+          };
+          writeDb(db, (writeErr) => {
+            if (writeErr) {
+              res.writeHead(500, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: 'Database write failed' }));
+            } else {
+              console.log(`[ORDER] Payment proof submitted for order "${id}".`);
+              res.writeHead(200, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify(order));
+            }
+          });
+        });
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Invalid JSON payload' }));
+      }
+    });
+    return;
+  }
+
   // 8. GET /api/analytics (Admin - Stats & Reports)
   if (req.method === 'GET' && pathname === '/api/analytics') {
     readDb((err, db) => {

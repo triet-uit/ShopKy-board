@@ -230,7 +230,8 @@
             <label for="checkout-payment" data-translate="checkout_payment">Payment Method</label>
             <select id="checkout-payment">
               <option value="COD" data-translate="pay_cod">Cash on Delivery (COD)</option>
-              <option value="Bank Transfer" data-translate="pay_bank">Bank Transfer (Simulated QR)</option>
+              <option value="Bank Transfer" data-translate="pay_bank">Bank Transfer (VietQR)</option>
+              <option value="MoMo" data-translate="pay_momo">Ví MoMo</option>
             </select>
           </div>
           <button type="submit" class="btn-primary btn-submit-checkout" data-translate="btn_place_order">Place Order</button>
@@ -283,7 +284,30 @@
           </div>
         </div>
 
-        <button class="btn-primary" onclick="closeOrderSuccess()" data-translate="success_continue">Continue Shopping</button>
+        <!-- QR & Payment Proof Section (Hidden for COD, shown for Bank/Momo) -->
+        <div id="qr-payment-section" class="qr-payment-section" style="display:none; margin-top: 1.5rem; border-top: 1px dashed var(--border-glass); padding-top: 1.5rem;">
+          <h3 style="font-size: 1rem; font-weight:700; margin-bottom: 0.5rem; font-family: var(--font-family-title);" data-translate="qr_title_pay">Please Scan QR to Pay</h3>
+          
+          <div class="qr-code-box" style="display:flex; justify-content:center; margin-bottom: 1rem;">
+            <img id="payment-qr-img" src="" alt="Payment QR" style="max-width: 200px; border-radius: 12px; border: 1px solid var(--border-glass);">
+          </div>
+          
+          <div class="proof-form" style="display:flex; flex-direction:column; gap:0.75rem; text-align: left;">
+            <div class="form-group">
+              <label style="font-size: 0.8rem; font-weight:600; color: var(--text-secondary);" data-translate="label_proof_text">Transaction Message / Notes</label>
+              <input type="text" id="proof-text-input" placeholder="e.g. Transaction ID, transfer note..." data-translate-placeholder="placeholder_proof_text" style="width:100%; padding:0.6rem; border-radius:8px; border:1px solid var(--border-glass); background:var(--bg-input);">
+            </div>
+            
+            <div class="form-group">
+              <label style="font-size: 0.8rem; font-weight:600; color: var(--text-secondary);" data-translate="label_proof_file">Upload Receipt Screenshot</label>
+              <input type="file" id="proof-file-input" accept="image/*" style="width:100%; font-size:0.8rem; margin-top:0.25rem;">
+            </div>
+            
+            <button id="btn-submit-proof" class="btn-primary" onclick="submitPaymentProof()" style="width: 100%; padding: 0.65rem;" data-translate="btn_confirm_paid">Submit Proof & Complete</button>
+          </div>
+        </div>
+
+        <button id="btn-success-continue" class="btn-primary" onclick="closeOrderSuccess()" data-translate="success_continue" style="margin-top: 1rem; width: 100%;">Continue Shopping</button>
       </div>
     </div>
   </div>
