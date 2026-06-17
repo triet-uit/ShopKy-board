@@ -1,0 +1,108 @@
+{
+  "products": [
+    {
+      "id": "prod-1",
+      "name": "Urban Leather Jacket",
+      "description": "Premium black leather jacket featuring asymmetric zipper closure, zipper cuffs, and fine inner lining. Perfect for style and comfort.",
+      "priceVND": 1250000,
+      "priceUSD": 49,
+      "image": "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&auto=format&fit=crop&q=80",
+      "category": "Fashion",
+      "stock": 15,
+      "rating": 4.8
+    },
+    {
+      "id": "prod-2",
+      "name": "Emerald Evening Dress",
+      "description": "Elegant emerald green silk dress with a pleated waist, sleeveless design, and an open back detail. Tailored for night events.",
+      "priceVND": 890000,
+      "priceUSD": 35,
+      "image": "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=600&auto=format&fit=crop&q=80",
+      "category": "Fashion",
+      "stock": 8,
+      "rating": 4.6
+    },
+    {
+      "id": "prod-3",
+      "name": "Retro Neon Sneakers",
+      "description": "Comfortable street-style sneakers designed with high-quality breathable mesh and striking neon panels. Responsive cushioning.",
+      "priceVND": 1500000,
+      "priceUSD": 59,
+      "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&auto=format&fit=crop&q=80",
+      "category": "Fashion",
+      "stock": 25,
+      "rating": 4.7
+    },
+    {
+      "id": "prod-4",
+      "name": "Acoustic Noise-Cancelling Headphones",
+      "description": "High-fidelity wireless over-ear headphones with active noise cancellation, ambient mode, and up to 40 hours of playback.",
+      "priceVND": 2900000,
+      "priceUSD": 115,
+      "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80",
+      "category": "Tech",
+      "stock": 12,
+      "rating": 4.9
+    },
+    {
+      "id": "prod-5",
+      "name": "Minimalist Ceramic Watch",
+      "description": "Sleek smart watch with a white ceramic dial, minimalist leather strap, heart rate monitor, and custom widgets support.",
+      "priceVND": 1990000,
+      "priceUSD": 78,
+      "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80",
+      "category": "Tech",
+      "stock": 20,
+      "rating": 4.5
+    },
+    {
+      "id": "prod-6",
+      "name": "RGB Mechanical Keyboard",
+      "description": "Tactile blue switches mechanical keyboard with customizable RGB backlighting, aluminum top cover, and detachable USB-C cable.",
+      "priceVND": 1150000,
+      "priceUSD": 45,
+      "image": "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&auto=format&fit=crop&q=80",
+      "category": "Tech",
+      "stock": 18,
+      "rating": 4.4
+    },
+    {
+      "id": "prod-7",
+      "name": "Sunset Rose Bouquet",
+      "description": "A beautiful arrangement of fresh orange and red roses, wrapped elegantly in craft paper. Includes a personalized greeting card.",
+      "priceVND": 390000,
+      "priceUSD": 15,
+      "image": "https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=600&auto=format&fit=crop&q=80",
+      "category": "Flowers",
+      "stock": 30,
+      "rating": 4.8
+    },
+    {
+      "id": "prod-8",
+      "name": "Sweet Pink Tulips",
+      "description": "A rustic terracotta pot planted with premium pink tulips. Perfect for home decor or sending warm wishes to loved ones.",
+      "priceVND": 450000,
+      "priceUSD": 18,
+      "image": "https://images.unsplash.com/photo-1520763185298-1b434c919102?w=600&auto=format&fit=crop&q=80",
+      "category": "Flowers",
+      "stock": 15,
+      "rating": 4.6
+    },
+    {
+      "id": "prod-9",
+      "name": "Glory Sunflowers Vase",
+      "description": "Vibrant sunflowers arranged inside a clear glass vase with baby's breath accents. Brings sunshine and happiness to any room.",
+      "priceVND": 490000,
+      "priceUSD": 19,
+      "image": "https://images.unsplash.com/photo-1597848212624-a19eb35e2651?w=600&auto=format&fit=crop&q=80",
+      "category": "Flowers",
+      "stock": 10,
+      "rating": 4.7
+    }
+  ],
+  "orders": [],
+  "settings": {
+    "exchangeRate": 25400,
+    "shopName": "AetherShop"
+  }
+}

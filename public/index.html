@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AetherShop - Premium Fashion, Tech & Flowers</title>
+  <!-- Google Fonts: Outfit and Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ==========================================================================
+       App Container (Header + Hero + Storefront Catalog)
+       ========================================================================== -->
+  <div class="app-container">
+    
+    <!-- HEADER -->
+    <header class="main-header">
+      <div class="header-left">
+        <div class="logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0" />
+          </svg>
+          <h1>Aether<span>Shop</span></h1>
+        </div>
+      </div>
+      
+      <div class="header-center">
+        <nav class="nav-links">
+          <a href="#" class="active" onclick="showCatalog()">Shop</a>
+          <a href="#" onclick="openTrackOrderModal()">Track Order</a>
+          <a href="admin.html" class="nav-admin">Admin Portal</a>
+        </nav>
+      </div>
+
+      <div class="header-right">
+        <!-- Currency Switcher -->
+        <div class="currency-switcher">
+          <button id="btn-currency-vnd" class="currency-btn active" onclick="setCurrency('VND')">VND</button>
+          <button id="btn-currency-usd" class="currency-btn" onclick="setCurrency('USD')">USD</button>
+        </div>
+
+        <!-- Theme Toggle -->
+        <button id="btn-theme-toggle" class="btn-icon" title="Toggle Theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+
+        <!-- Cart Button -->
+        <button id="btn-cart-toggle" class="btn-cart" onclick="toggleCart(true)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+          </svg>
+          <span id="cart-badge" class="cart-badge">0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <h2>Modern Curated Shopping</h2>
+        <p>Explore premium fashion wear, state-of-the-art tech gadgets, and fresh sunset flowers.</p>
+        
+        <!-- Search Bar -->
+        <div class="search-container">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="search-input" placeholder="Search catalog for jackets, headphones, roses..." oninput="handleSearch()">
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN SHOP BOARD -->
+    <main class="shop-main">
+      <!-- Catalog Filters -->
+      <div class="catalog-filters">
+        <button class="filter-tab active" data-category="All" onclick="filterCategory('All')">All Products</button>
+        <button class="filter-tab" data-category="Fashion" onclick="filterCategory('Fashion')">Fashion</button>
+        <button class="filter-tab" data-category="Tech" onclick="filterCategory('Tech')">Technology</button>
+        <button class="filter-tab" data-category="Flowers" onclick="filterCategory('Flowers')">Flowers</button>
+      </div>
+
+      <!-- Products Grid -->
+      <div id="products-grid" class="products-grid">
+        <!-- Dynamic content via JS -->
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="shop-footer">
+      <p>&copy; 2026 AetherShop. Made with premium glassmorphic aesthetics. All rights reserved.</p>
+    </footer>
+
+  </div>
+
+  <!-- ==========================================================================
+       SIDE CART DRAWER
+       ========================================================================== -->
+  <div id="cart-drawer" class="cart-drawer">
+    <div class="cart-drawer-header">
+      <h3>Shopping Cart</h3>
+      <button class="btn-close" onclick="toggleCart(false)" title="Close Cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Cart Items list -->
+    <div id="cart-items-container" class="cart-items-container">
+      <!-- Dynamic list -->
+    </div>
+
+    <!-- Cart Footer Summary -->
+    <div class="cart-drawer-footer">
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <span id="cart-subtotal" class="subtotal-val">$0.00</span>
+      </div>
+      <button id="btn-checkout-proceed" class="btn-checkout" onclick="openCheckoutModal()">Proceed to Checkout</button>
+    </div>
+  </div>
+  <div id="cart-drawer-overlay" class="drawer-overlay" onclick="toggleCart(false)"></div>
+
+  <!-- ==========================================================================
+       MODAL: PRODUCT DETAILS VIEW
+       ========================================================================== -->
+  <div id="modal-product-details" class="modal-overlay">
+    <div class="modal-container detail-modal">
+      <button class="btn-modal-close" onclick="closeModal('modal-product-details')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div class="modal-body detail-body-grid">
+        <div class="detail-image-box">
+          <img id="detail-product-img" src="" alt="Product Image">
+        </div>
+        <div class="detail-info-box">
+          <span id="detail-product-category" class="category-pill">Category</span>
+          <h2 id="detail-product-name">Product Name</h2>
+          <div class="rating-row">
+            <svg class="star-icon" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            <span id="detail-product-rating">4.8</span>
+          </div>
+          <p id="detail-product-desc" class="product-description">Description text...</p>
+          <div class="price-stock-row">
+            <div class="price-box">
+              <span class="price-label">Price</span>
+              <h3 id="detail-product-price">$0.00</h3>
+            </div>
+            <div class="stock-box">
+              <span class="stock-label">Availability</span>
+              <span id="detail-product-stock" class="stock-badge">In Stock</span>
+            </div>
+          </div>
+          <div class="action-row">
+            <div class="qty-selector">
+              <button onclick="changeDetailQty(-1)">-</button>
+              <input type="number" id="detail-qty-input" value="1" min="1">
+              <button onclick="changeDetailQty(1)">+</button>
+            </div>
+            <button id="btn-detail-add-to-cart" class="btn-primary flex-grow">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: CHECKOUT
+       ========================================================================== -->
+  <div id="modal-checkout" class="modal-overlay">
+    <div class="modal-container checkout-modal">
+      <div class="modal-header">
+        <h2>Checkout Details</h2>
+        <button class="btn-modal-close" onclick="closeModal('modal-checkout')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body checkout-body-grid">
+        <form id="checkout-form" onsubmit="handleCheckout(event)">
+          <div class="form-group">
+            <label for="checkout-name">Full Name</label>
+            <input type="text" id="checkout-name" required placeholder="John Doe">
+          </div>
+          <div class="form-group">
+            <label for="checkout-phone">Phone Number</label>
+            <input type="text" id="checkout-phone" required placeholder="0987654321">
+          </div>
+          <div class="form-group">
+            <label for="checkout-email">Email Address</label>
+            <input type="email" id="checkout-email" required placeholder="john@example.com">
+          </div>
+          <div class="form-group">
+            <label for="checkout-address">Shipping Address</label>
+            <input type="text" id="checkout-address" required placeholder="123 Street Name, Ward, District, City">
+          </div>
+          <div class="form-group">
+            <label for="checkout-payment">Payment Method</label>
+            <select id="checkout-payment">
+              <option value="COD">Cash on Delivery (COD)</option>
+              <option value="Bank Transfer">Bank Transfer (Simulated QR)</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-primary btn-submit-checkout">Place Order</button>
+        </form>
+        
+        <div class="checkout-summary-box">
+          <h3>Order Summary</h3>
+          <div id="checkout-summary-list" class="checkout-summary-list">
+            <!-- Dynamic items list -->
+          </div>
+          <div class="checkout-total-row">
+            <span>Total Payable</span>
+            <span id="checkout-total-val">$0.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: ORDER SUCCESS / CONFIRMATION
+       ========================================================================== -->
+  <div id="modal-order-success" class="modal-overlay">
+    <div class="modal-container success-modal">
+      <div class="modal-body success-body">
+        <div class="success-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <h2>Order Placed Successfully!</h2>
+        <p>Thank you for purchasing. Your order has been registered in our system.</p>
+        
+        <div class="receipt-card">
+          <div class="receipt-row">
+            <span class="label">Order ID</span>
+            <span id="receipt-order-id" class="val">ord-172324...</span>
+          </div>
+          <div class="receipt-row">
+            <span class="label">Total Paid</span>
+            <span id="receipt-total" class="val">$0.00</span>
+          </div>
+          <div class="receipt-row">
+            <span class="label">Payment Method</span>
+            <span id="receipt-payment" class="val">COD</span>
+          </div>
+          <div class="receipt-row">
+            <span class="label">Deliver To</span>
+            <span id="receipt-name" class="val">John Doe</span>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="closeOrderSuccess()">Continue Shopping</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: TRACK ORDER
+       ========================================================================== -->
+  <div id="modal-track-order" class="modal-overlay">
+    <div class="modal-container track-modal">
+      <div class="modal-header">
+        <h2>Track Order Status</h2>
+        <button class="btn-modal-close" onclick="closeModal('modal-track-order')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <input type="text" id="track-order-id-input" placeholder="Enter Order ID (e.g. ord-172324...)">
+          <button class="btn-primary" onclick="handleTrackOrder()">Search</button>
+        </div>
+        <div id="track-order-result" class="track-order-result">
+          <!-- Dynamic Order Track Details -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic notification toast wrapper -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Javascript Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
