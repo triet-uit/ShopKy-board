@@ -727,6 +727,12 @@ button, select, input, textarea {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background-color: var(--bg-surface-opaque);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 20;
 }
 .modal-header h2 {
   font-family: var(--font-family-title);
@@ -743,10 +749,11 @@ button, select, input, textarea {
   display: flex;
   align-items: center;
   position: absolute;
-  top: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
   right: 1.5rem;
   z-index: 10;
-  transition: background-color var(--transition-speed);
+  transition: background-color var(--transition-speed), transform var(--transition-speed);
 }
 .btn-modal-close:hover {
   background-color: var(--btn-secondary-bg);
@@ -1467,5 +1474,138 @@ button, select, input, textarea {
   border-color: var(--accent-cyan);
   transform: translateX(2px);
 }
+
+/* ==========================================================================
+   MOBILE RESPONSIVENESS AND WEB APP POLISH
+   ========================================================================== */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 0 0.85rem;
+  }
+  
+  .main-header {
+    height: auto;
+    padding: 0.85rem 1rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  
+  .header-left {
+    order: 1;
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .header-right {
+    order: 2;
+    gap: 0.5rem;
+  }
+  
+  .header-center {
+    order: 3;
+    flex: 1 1 100%;
+    display: flex;
+    justify-content: center;
+    border-top: 1px dashed var(--border-glass);
+    padding-top: 0.6rem;
+    margin-top: 0.2rem;
+  }
+
+  .nav-links {
+    gap: 1.25rem;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .nav-links a {
+    font-size: 0.85rem;
+    padding: 0.2rem 0;
+  }
+
+  .hero-section {
+    padding: 2.5rem 1rem;
+    margin-top: 1.25rem;
+    border-radius: 16px;
+  }
+
+  .hero-content h2 {
+    font-size: 1.85rem;
+    letter-spacing: -0.5px;
+  }
+
+  .hero-content p {
+    font-size: 0.92rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-tabs {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .filter-tab {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.82rem;
+  }
+
+  .products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .modal-container {
+    max-width: 95%;
+    border-radius: 16px;
+  }
+  
+  .modal-body {
+    padding: 1.25rem;
+  }
+
+  .modal-header {
+    padding: 1.25rem;
+  }
+
+  .btn-modal-close {
+    right: 1.25rem;
+  }
+
+  .detail-image-box {
+    height: 200px;
+  }
+
+  .checkout-body-grid {
+    gap: 1.5rem;
+  }
+
+  /* Admin table overflow card header layout */
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem;
+  }
+
+  .track-modal .form-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
 
 
