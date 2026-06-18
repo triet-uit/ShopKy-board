@@ -96,11 +96,21 @@
     <!-- MAIN SHOP BOARD -->
     <main class="shop-main">
       <!-- Catalog Filters -->
-      <div class="catalog-filters">
-        <button class="filter-tab active" data-category="All" onclick="filterCategory('All')" data-translate="cat_all">All Products</button>
-        <button class="filter-tab" data-category="Fashion" onclick="filterCategory('Fashion')" data-translate="cat_fashion">Fashion</button>
-        <button class="filter-tab" data-category="Tech" onclick="filterCategory('Tech')" data-translate="cat_tech">Technology</button>
-        <button class="filter-tab" data-category="Flowers" onclick="filterCategory('Flowers')" data-translate="cat_flowers">Flowers</button>
+      <div class="catalog-filters" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+        <div class="filter-tabs" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button class="filter-tab active" data-category="All" onclick="filterCategory('All')" data-translate="cat_all">All Products</button>
+          <button class="filter-tab" data-category="Fashion" onclick="filterCategory('Fashion')" data-translate="cat_fashion">Fashion</button>
+          <button class="filter-tab" data-category="Tech" onclick="filterCategory('Tech')" data-translate="cat_tech">Technology</button>
+          <button class="filter-tab" data-category="Flowers" onclick="filterCategory('Flowers')" data-translate="cat_flowers">Flowers</button>
+        </div>
+        <div class="sort-container">
+          <select id="sort-selector" onchange="handleSortChange()" style="padding: 0.5rem 1rem; border-radius: 20px; border: 1px solid var(--border-glass); background: var(--bg-glass); color: var(--text-primary); font-family: var(--font-family-body); font-size: 0.85rem; font-weight: 500; cursor: pointer; outline: none; transition: border-color 0.2s;">
+            <option value="default" data-translate="sort_default">Sắp xếp: Mặc định</option>
+            <option value="price-asc" data-translate="sort_price_asc">Giá: Thấp đến Cao</option>
+            <option value="price-desc" data-translate="sort_price_desc">Giá: Cao đến Thấp</option>
+            <option value="rating-desc" data-translate="sort_rating_desc">Đánh giá: Cao đến Thấp</option>
+          </select>
+        </div>
       </div>
 
       <!-- Products Grid -->
@@ -137,11 +147,19 @@
 
     <!-- Cart Footer Summary -->
     <div class="cart-drawer-footer">
-      <div class="summary-row">
+      <div class="summary-row" style="display: flex; justify-content: space-between;">
         <span data-translate="cart_subtotal">Subtotal</span>
         <span id="cart-subtotal" class="subtotal-val">$0.00</span>
       </div>
-      <button id="btn-checkout-proceed" class="btn-checkout" onclick="openCheckoutModal()" data-translate="cart_checkout">Proceed to Checkout</button>
+      <div class="summary-row" id="cart-shipping-row" style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem; display: flex; justify-content: space-between;">
+        <span data-translate="cart_shipping">Phí vận chuyển</span>
+        <span id="cart-shipping-val">$0.00</span>
+      </div>
+      <div class="summary-row" id="cart-total-row" style="font-weight: 700; margin-top: 0.5rem; border-top: 1px dashed var(--border-glass); padding-top: 0.5rem; display: flex; justify-content: space-between;">
+        <span data-translate="cart_total">Tổng cộng</span>
+        <span id="cart-total-val">$0.00</span>
+      </div>
+      <button id="btn-checkout-proceed" class="btn-checkout" onclick="openCheckoutModal()" style="margin-top: 0.75rem;" data-translate="cart_checkout">Proceed to Checkout</button>
     </div>
   </div>
   <div id="cart-drawer-overlay" class="drawer-overlay" onclick="toggleCart(false)"></div>
@@ -234,6 +252,14 @@
               <option value="MoMo" data-translate="pay_momo">Ví MoMo</option>
             </select>
           </div>
+          <div class="form-group coupon-group">
+            <label for="checkout-coupon-input" data-translate="checkout_coupon_label">Mã Giảm Giá</label>
+            <div style="display: flex; gap: 0.5rem;">
+              <input type="text" id="checkout-coupon-input" placeholder="Nhập mã (ví dụ: SHOPKY10)" data-translate-placeholder="coupon_placeholder" style="flex-grow: 1;">
+              <button type="button" id="btn-apply-coupon" class="btn-primary" onclick="applyCoupon()" style="padding: 0 1rem; white-space: nowrap;" data-translate="btn_apply_coupon">Áp dụng</button>
+            </div>
+            <div id="coupon-message" style="font-size: 0.8rem; margin-top: 0.25rem; display: none;"></div>
+          </div>
           <button type="submit" class="btn-primary btn-submit-checkout" data-translate="btn_place_order">Place Order</button>
         </form>
         
@@ -241,6 +267,15 @@
           <h3 data-translate="summary_title">Order Summary</h3>
           <div id="checkout-summary-list" class="checkout-summary-list">
             <!-- Dynamic items list -->
+          </div>
+          <div class="summary-divider" style="height: 1px; background: var(--border-glass); margin: 0.75rem 0;"></div>
+          <div class="discount-row" id="checkout-discount-row" style="display: none; justify-content: space-between; font-size: 0.9rem; color: #10b981; margin-bottom: 0.5rem;">
+            <span id="label-discount-applied">Giảm giá</span>
+            <span id="checkout-discount-val">-$0.00</span>
+          </div>
+          <div class="shipping-row" id="checkout-shipping-row" style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+            <span data-translate="checkout_shipping">Phí vận chuyển</span>
+            <span id="checkout-shipping-val">$0.00</span>
           </div>
           <div class="checkout-total-row">
             <span data-translate="summary_total">Total Payable</span>

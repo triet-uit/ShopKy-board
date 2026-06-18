@@ -8,7 +8,7 @@
       "priceUSD": 49,
       "image": "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&auto=format&fit=crop&q=80",
       "category": "Fashion",
-      "stock": 14,
+      "stock": 9,
       "rating": 4.8
     },
     {
@@ -102,6 +102,59 @@
   ],
   "orders": [
     {
+      "id": "ord-1781778430370",
+      "customer": {
+        "name": "Verify Customer",
+        "phone": "0901234567",
+        "email": "verify@example.com",
+        "address": "123 Duong Verification, Quan Test, TP.HCM"
+      },
+      "items": [
+        {
+          "id": "prod-1",
+          "name": "Urban Leather Jacket",
+          "qty": 1,
+          "price": 1250000,
+          "currency": "VND"
+        }
+      ],
+      "subtotal": 1250000,
+      "discountAmount": 312500,
+      "couponCode": "VERIFY25",
+      "payableAmount": 937500,
+      "shippingFee": 35000,
+      "currency": "VND",
+      "paymentMethod": "COD",
+      "status": "Pending",
+      "createdAt": "2026-06-18T10:27:10.370Z"
+    },
+    {
+      "id": "ord-1781776472790",
+      "customer": {
+        "name": "Test Verify",
+        "phone": "0987654321",
+        "email": "",
+        "address": "123 Verified St"
+      },
+      "items": [
+        {
+          "id": "prod-1",
+          "name": "Urban Leather Jacket",
+          "qty": 4,
+          "price": 1250000,
+          "currency": "VND"
+        }
+      ],
+      "subtotal": 5000000,
+      "discountAmount": 500000,
+      "couponCode": "SHOPKY10",
+      "payableAmount": 4500000,
+      "currency": "VND",
+      "paymentMethod": "COD",
+      "status": "Pending",
+      "createdAt": "2026-06-18T09:54:32.790Z"
+    },
+    {
       "id": "ord-1781688766603",
       "customer": {
         "name": "Test Customer",
@@ -132,6 +185,33 @@
   ],
   "settings": {
     "exchangeRate": 25400,
-    "shopName": "ShopKy"
-  }
+    "shopName": "ShopKy Verify",
+    "shippingFeeVND": 35000,
+    "shippingFeeUSD": 1.2,
+    "bankName": "VCB",
+    "bankAccount": "0381000579717",
+    "bankAccountName": "VO DINH TRIET",
+    "telegramToken": "",
+    "telegramChatId": ""
+  },
+  "coupons": [
+    {
+      "code": "SHOPKY10",
+      "type": "percentage",
+      "value": 10,
+      "active": true
+    },
+    {
+      "code": "GIAM20K",
+      "type": "fixed",
+      "value": 20000,
+      "active": true
+    },
+    {
+      "code": "VERIFY25",
+      "type": "percentage",
+      "value": 25,
+      "active": true
+    }
+  ]
 }

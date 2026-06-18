@@ -8,6 +8,9 @@ let activeCategory = 'All';
 let searchQuery = '';
 let selectedDetailProduct = null;
 let currentOrderId = null;
+let appliedCoupon = null;
+let discountVal = 0;
+let settings = {};
 
 // ==========================================
 // Translation Dictionary (i18n)
@@ -27,7 +30,10 @@ const TRANSLATIONS = {
     cat_flowers: "Hoa tươi",
     footer_text: "© 2026 ShopKy. Thiết kế bằng phong cách kính mờ cao cấp. Bảo lưu mọi quyền.",
     cart_title: "Giỏ hàng của bạn",
-    cart_subtotal: "Tổng tiền tạm tính",
+    cart_subtotal: "Tạm tính",
+    cart_shipping: "Phí vận chuyển",
+    cart_total: "Tổng thanh toán",
+    checkout_shipping: "Phí vận chuyển",
     cart_checkout: "Tiến hành thanh toán",
     detail_category: "Danh mục",
     detail_price_label: "Giá bán",
@@ -69,6 +75,18 @@ const TRANSLATIONS = {
     track_placeholder: "Nhập Mã đơn hàng của bạn (ví dụ: ord-172324...)",
     btn_search: "Tìm kiếm",
     my_orders_title: "Đơn hàng bạn đã mua",
+    checkout_coupon_label: "Mã Giảm Giá",
+    coupon_placeholder: "Nhập mã (ví dụ: SHOPKY10)",
+    btn_apply_coupon: "Áp dụng",
+    sort_default: "Sắp xếp: Mặc định",
+    sort_price_asc: "Giá: Thấp đến Cao",
+    sort_price_desc: "Giá: Cao đến Thấp",
+    sort_rating_desc: "Đánh giá: Cao đến Thấp",
+    discount_label: "Giảm giá ({code})",
+    toast_coupon_applied: "Áp dụng mã giảm giá thành công! 🎉",
+    toast_coupon_invalid: "Mã giảm giá không hợp lệ hoặc đã hết hạn.",
+    coupon_msg_valid: "Mã giảm giá \"{code}\" hợp lệ! Đã giảm {amount}.",
+    coupon_msg_invalid: "Mã giảm giá không hợp lệ hoặc đã hết hạn.",
     
     // Dynamic JS texts
     empty_cart: "Giỏ hàng của bạn đang trống.",
@@ -101,6 +119,9 @@ const TRANSLATIONS = {
     footer_text: "© 2026 ShopKy. Made with premium glassmorphic aesthetics. All rights reserved.",
     cart_title: "Shopping Cart",
     cart_subtotal: "Subtotal",
+    cart_shipping: "Shipping Fee",
+    cart_total: "Total Payable",
+    checkout_shipping: "Shipping Fee",
     cart_checkout: "Proceed to Checkout",
     detail_category: "Category",
     detail_price_label: "Price",
@@ -141,6 +162,18 @@ const TRANSLATIONS = {
     track_placeholder: "Enter Order ID (e.g. ord-172324...)",
     btn_search: "Search",
     my_orders_title: "Your Purchased Orders",
+    checkout_coupon_label: "Promo Code",
+    coupon_placeholder: "Enter code (e.g. SHOPKY10)",
+    btn_apply_coupon: "Apply",
+    sort_default: "Sort: Default",
+    sort_price_asc: "Price: Low to High",
+    sort_price_desc: "Price: High to Low",
+    sort_rating_desc: "Rating: High to Low",
+    discount_label: "Discount ({code})",
+    toast_coupon_applied: "Coupon code applied successfully! 🎉",
+    toast_coupon_invalid: "Invalid or expired coupon code.",
+    coupon_msg_valid: "Coupon \"{code}\" applied! Discounted {amount}.",
+    coupon_msg_invalid: "Invalid or expired coupon code.",
     
     // Dynamic JS texts
     empty_cart: "Your cart is empty.",
@@ -217,9 +250,28 @@ function updateLanguageSwitcherUI() {
 // ==========================================
 // Initialization & Loading
 // ==========================================
+async function loadSettings() {
+  try {
+    const res = await fetch('/api/settings');
+    if (!res.ok) throw new Error('Failed to fetch settings');
+    settings = await res.json();
+    
+    // Update shop name dynamically in Header logo
+    const logoEl = document.querySelector('.logo h1');
+    if (logoEl && settings.shopName) {
+      const mainText = settings.shopName.substring(0, settings.shopName.length - 2);
+      const accentText = settings.shopName.substring(settings.shopName.length - 2);
+      logoEl.innerHTML = `${mainText}<span>${accentText}</span>`;
+    }
+  } catch (err) {
+    console.error('Failed to load settings:', err);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   // Sync UI currency and language switchers
   updateCurrencySwitcherUI();
+  await loadSettings();
   applyLanguage(); // This handles language UI as well
   
   // Theme Toggle Setup
@@ -272,6 +324,26 @@ function renderProducts() {
                           p.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  // Sort products
+  const sortSelector = document.getElementById('sort-selector');
+  const activeSort = sortSelector ? sortSelector.value : 'default';
+
+  if (activeSort === 'price-asc') {
+    filtered.sort((a, b) => {
+      const priceA = activeCurrency === 'VND' ? a.priceVND : a.priceUSD;
+      const priceB = activeCurrency === 'VND' ? b.priceVND : b.priceUSD;
+      return priceA - priceB;
+    });
+  } else if (activeSort === 'price-desc') {
+    filtered.sort((a, b) => {
+      const priceA = activeCurrency === 'VND' ? a.priceVND : a.priceUSD;
+      const priceB = activeCurrency === 'VND' ? b.priceVND : b.priceUSD;
+      return priceB - priceA;
+    });
+  } else if (activeSort === 'rating-desc') {
+    filtered.sort((a, b) => b.rating - a.rating);
+  }
 
   if (filtered.length === 0) {
     grid.innerHTML = `<div class="empty-cart-text" style="grid-column: 1/-1; margin: 3rem 0;">No matching products found.</div>`;
@@ -337,6 +409,10 @@ function filterCategory(category) {
 function handleSearch() {
   const input = document.getElementById('search-input');
   searchQuery = input ? input.value.trim() : '';
+  renderProducts();
+}
+
+function handleSortChange() {
   renderProducts();
 }
 
@@ -455,7 +531,10 @@ function updateCartUI() {
     container.appendChild(div);
   });
 
-  updateSubtotal(totalSum);
+  const shippingFee = activeCurrency === 'USD' ? (settings.shippingFeeUSD || 0) : (settings.shippingFeeVND || 0);
+  const cartTotal = totalSum + shippingFee;
+
+  updateSubtotal(totalSum, shippingFee, cartTotal);
 }
 
 function changeCartQty(index, offset) {
@@ -488,10 +567,18 @@ function removeCartItem(index) {
   showToast(t('removed_from_cart', { name: name }), 'warning');
 }
 
-function updateSubtotal(subtotal) {
+function updateSubtotal(subtotal, shippingFee = 0, cartTotal = 0) {
   const subtotalEl = document.getElementById('cart-subtotal');
   if (subtotalEl) {
     subtotalEl.innerText = formatValue(subtotal);
+  }
+  const shippingValEl = document.getElementById('cart-shipping-val');
+  if (shippingValEl) {
+    shippingValEl.innerText = shippingFee > 0 ? formatValue(shippingFee) : (activeLang === 'vi' ? 'Miễn phí' : 'Free');
+  }
+  const totalValEl = document.getElementById('cart-total-val');
+  if (totalValEl) {
+    totalValEl.innerText = formatValue(cartTotal);
   }
 }
 
@@ -589,6 +676,19 @@ function openCheckoutModal() {
   if (cart.length === 0) return;
   toggleCart(false); // Close cart drawer
   
+  // Reset coupon state
+  appliedCoupon = null;
+  discountVal = 0;
+  const couponInput = document.getElementById('checkout-coupon-input');
+  if (couponInput) couponInput.value = '';
+  const couponMsg = document.getElementById('coupon-message');
+  if (couponMsg) {
+    couponMsg.style.display = 'none';
+    couponMsg.innerText = '';
+  }
+  const discountRow = document.getElementById('checkout-discount-row');
+  if (discountRow) discountRow.style.display = 'none';
+
   // Render checkout summary list
   const summaryContainer = document.getElementById('checkout-summary-list');
   if (!summaryContainer) return;
@@ -610,10 +710,90 @@ function openCheckoutModal() {
     summaryContainer.appendChild(div);
   });
 
+  const shippingFee = activeCurrency === 'USD' ? (settings.shippingFeeUSD || 0) : (settings.shippingFeeVND || 0);
+  const finalTotal = totalSum + shippingFee;
+
+  const shippingValEl = document.getElementById('checkout-shipping-val');
+  if (shippingValEl) {
+    shippingValEl.innerText = shippingFee > 0 ? formatValue(shippingFee) : (activeLang === 'vi' ? 'Miễn phí' : 'Free');
+  }
+
   const totalValEl = document.getElementById('checkout-total-val');
-  if (totalValEl) totalValEl.innerText = formatValue(totalSum);
+  if (totalValEl) totalValEl.innerText = formatValue(finalTotal);
 
   openModal('modal-checkout');
+}
+
+async function applyCoupon() {
+  const couponInput = document.getElementById('checkout-coupon-input');
+  const couponMsg = document.getElementById('coupon-message');
+  const discountRow = document.getElementById('checkout-discount-row');
+  const discountValEl = document.getElementById('checkout-discount-val');
+  const totalValEl = document.getElementById('checkout-total-val');
+  const labelDiscountApplied = document.getElementById('label-discount-applied');
+
+  if (!couponInput || !couponMsg || !discountRow || !discountValEl || !totalValEl) return;
+
+  const code = couponInput.value.trim();
+  if (!code) {
+    showToast(t('coupon_msg_invalid'), 'warning');
+    return;
+  }
+
+  const subtotal = cart.reduce((sum, item) => {
+    const price = activeCurrency === 'VND' ? item.priceVND : item.priceUSD;
+    return sum + (price * item.qty);
+  }, 0);
+
+  try {
+    const res = await fetch('/api/validate-coupon', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, currency: activeCurrency, subtotal })
+    });
+    
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || t('toast_coupon_invalid'));
+
+    appliedCoupon = data.code;
+    discountVal = data.discount;
+
+    // Show discount row
+    discountRow.style.display = 'flex';
+    if (labelDiscountApplied) {
+      labelDiscountApplied.innerText = t('discount_label', { code: data.code });
+    }
+    discountValEl.innerText = '-' + formatValue(data.discount);
+
+    // Recalculate total payable
+    const shippingFee = activeCurrency === 'USD' ? (settings.shippingFeeUSD || 0) : (settings.shippingFeeVND || 0);
+    const finalTotal = Math.max(0, subtotal - data.discount) + shippingFee;
+    totalValEl.innerText = formatValue(finalTotal);
+
+    // Show success message
+    couponMsg.style.display = 'block';
+    couponMsg.style.color = '#10b981'; // Green
+    couponMsg.innerText = t('coupon_msg_valid', { code: data.code, amount: formatValue(data.discount) });
+
+    showToast(t('toast_coupon_applied'), 'success');
+  } catch (err) {
+    appliedCoupon = null;
+    discountVal = 0;
+
+    // Hide discount row
+    discountRow.style.display = 'none';
+
+    // Reset total
+    const shippingFee = activeCurrency === 'USD' ? (settings.shippingFeeUSD || 0) : (settings.shippingFeeVND || 0);
+    totalValEl.innerText = formatValue(subtotal + shippingFee);
+
+    // Show error message
+    couponMsg.style.display = 'block';
+    couponMsg.style.color = '#ef4444'; // Red
+    couponMsg.innerText = err.message || t('coupon_msg_invalid');
+
+    showToast(err.message || t('toast_coupon_invalid'), 'danger');
+  }
 }
 
 async function handleCheckout(event) {
@@ -640,6 +820,7 @@ async function handleCheckout(event) {
       currency: activeCurrency
     })),
     subtotal: totalSum,
+    couponCode: appliedCoupon,
     currency: activeCurrency,
     paymentMethod
   };
@@ -660,7 +841,9 @@ async function handleCheckout(event) {
     currentOrderId = data.id; // Store order ID globally
     
     document.getElementById('receipt-order-id').innerText = data.id;
-    document.getElementById('receipt-total').innerText = formatValue(data.subtotal, data.currency);
+    const finalPaid = data.payableAmount !== undefined ? data.payableAmount : data.subtotal;
+    const totalPayableWithFee = finalPaid + (data.shippingFee || 0);
+    document.getElementById('receipt-total').innerText = formatValue(totalPayableWithFee, data.currency);
     
     // Payment Method display translation
     let displayedPayment = data.paymentMethod;
@@ -707,12 +890,15 @@ async function handleCheckout(event) {
       if (continueBtn) continueBtn.style.display = 'none';
 
       // Generate dynamic QR code URL
-      const amountInVND = data.currency === 'USD' ? Math.round(data.subtotal * 25400) : data.subtotal;
+      const amountInVND = data.currency === 'USD' ? Math.round(totalPayableWithFee * 25400) : totalPayableWithFee;
       const qrImg = document.getElementById('payment-qr-img');
       if (qrImg) {
         if (data.paymentMethod === 'Bank Transfer') {
-          // VietQR: Bank ID (VCB), Account No (0381000579717), template (compact), name (VO DINH TRIET)
-          const vietQRUrl = `https://img.vietqr.io/image/VCB-0381000579717-compact.png?amount=${amountInVND}&addInfo=${encodeURIComponent(data.id)}&accountName=${encodeURIComponent('VO DINH TRIET')}`;
+          const bankName = settings.bankName || 'VCB';
+          const bankAccount = settings.bankAccount || '0381000579717';
+          const bankAccountName = settings.bankAccountName || 'VO DINH TRIET';
+          
+          const vietQRUrl = `https://img.vietqr.io/image/${bankName}-${bankAccount}-compact.png?amount=${amountInVND}&addInfo=${encodeURIComponent(data.id)}&accountName=${encodeURIComponent(bankAccountName)}`;
           qrImg.src = vietQRUrl;
         } else if (data.paymentMethod === 'MoMo') {
           // Use the uploaded static MoMo QR code image
@@ -816,9 +1002,19 @@ async function handleTrackOrder() {
             </div>
           `).join('')}
         </div>
+        ${matched.discountAmount && matched.discountAmount > 0 ? `
+        <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:#10b981; margin-bottom: 0.25rem;">
+          <span>${t('discount_label', { code: matched.couponCode || '' })}</span>
+          <span>-${formatValue(matched.discountAmount, matched.currency)}</span>
+        </div>
+        ` : ''}
+        <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--text-secondary); margin-bottom: 0.25rem;">
+          <span>${t('checkout_shipping')}</span>
+          <span>${matched.shippingFee && matched.shippingFee > 0 ? formatValue(matched.shippingFee, matched.currency) : (activeLang === 'vi' ? 'Miễn phí' : 'Free')}</span>
+        </div>
         <div style="border-top:1px solid var(--border-glass); padding-top:0.75rem; display:flex; justify-content:space-between; font-weight:700; font-size:0.95rem;">
-          <span data-translate="cart_subtotal">${t('cart_subtotal')}</span>
-          <span style="color:var(--accent-cyan);">${formatValue(matched.subtotal, matched.currency)}</span>
+          <span data-translate="summary_total">${t('summary_total')}</span>
+          <span style="color:var(--accent-cyan);">${formatValue((matched.payableAmount !== undefined ? matched.payableAmount : matched.subtotal) + (matched.shippingFee || 0), matched.currency)}</span>
         </div>
       </div>
     `;
@@ -1008,9 +1204,11 @@ function resizeAndCompressImage(file, maxWidth = 500, maxHeight = 500, quality =
 // ==========================================
 function saveMyOrder(order) {
   let myOrders = JSON.parse(localStorage.getItem('shopky_my_orders')) || [];
+  const payableAmount = order.payableAmount !== undefined ? order.payableAmount : order.subtotal;
+  const totalPayableWithFee = payableAmount + (order.shippingFee || 0);
   const orderSummary = {
     id: order.id,
-    subtotal: order.subtotal,
+    subtotal: totalPayableWithFee,
     currency: order.currency,
     status: order.status,
     createdAt: order.createdAt || new Date().toISOString()

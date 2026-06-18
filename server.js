@@ -109,12 +109,83 @@ function writeDb(data, callback) {
   }
 }
 
+function checkAdminAuth(req) {
+  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+  const clientPass = req.headers['x-admin-password'];
+  return clientPass === adminPassword;
+}
+
+function sendTelegramNotification(settings, order) {
+  if (!settings.telegramToken || !settings.telegramChatId) return;
+
+  const orderId = order.id;
+  const customer = order.customer;
+  const itemsText = order.items.map(item => `- ${item.qty}x ${item.name} (${item.price.toLocaleString('vi-VN')} ${item.currency})`).join('\n');
+  const discountText = order.discountAmount ? `\nGiảm giá: -${order.discountAmount.toLocaleString('vi-VN')} ${order.currency} (Mã: ${order.couponCode})` : '';
+  const payableAmount = order.payableAmount !== undefined ? order.payableAmount : order.subtotal;
+  const shippingFee = order.shippingFee || 0;
+  const totalAmount = payableAmount + shippingFee;
+
+  const paymentText = order.paymentMethod;
+  const dateStr = new Date(order.createdAt).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+
+  const message = `🔔 *ĐƠN HÀNG MỚI TỪ SHOPKY*\n` +
+                  `-------------------------------\n` +
+                  `*Mã đơn:* \`${orderId}\`\n` +
+                  `*Thời gian:* ${dateStr}\n\n` +
+                  `*Khách hàng:*\n` +
+                  `- Tên: ${customer.name}\n` +
+                  `- SĐT: ${customer.phone}\n` +
+                  `- Địa chỉ: ${customer.address}\n` +
+                  `- Email: ${customer.email || 'N/A'}\n\n` +
+                  `*Sản phẩm:*\n${itemsText}\n` +
+                  `${discountText}\n` +
+                  `*Phí vận chuyển:* ${shippingFee ? shippingFee.toLocaleString('vi-VN') + ' ' + order.currency : 'Miễn phí'}\n` +
+                  `*Tổng thanh toán:* ${totalAmount.toLocaleString('vi-VN')} ${order.currency}\n` +
+                  `*Hình thức:* ${paymentText}`;
+
+  const postData = JSON.stringify({
+    chat_id: settings.telegramChatId,
+    text: message,
+    parse_mode: 'Markdown'
+  });
+
+  const options = {
+    hostname: 'api.telegram.org',
+    path: `/bot${settings.telegramToken}/sendMessage`,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(postData)
+    }
+  };
+
+  const req = https.request(options, res => {
+    let data = '';
+    res.on('data', chunk => data += chunk);
+    res.on('end', () => {
+      if (res.statusCode !== 200) {
+        console.error(`Telegram notification failed: status ${res.statusCode}, data ${data}`);
+      } else {
+        console.log(`Telegram notification sent successfully for order ${orderId}`);
+      }
+    });
+  });
+
+  req.on('error', err => {
+    console.error('Telegram request error:', err);
+  });
+
+  req.write(postData);
+  req.end();
+}
+
 // Server request handler
 const server = http.createServer((req, res) => {
   // CORS Headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-admin-password');
 
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
@@ -146,6 +217,11 @@ const server = http.createServer((req, res) => {
 
   // 2. POST /api/products (Admin - Add Product)
   if (req.method === 'POST' && pathname === '/api/products') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
     let body = '';
     req.on('data', chunk => body += chunk.toString());
     req.on('end', () => {
@@ -181,6 +257,11 @@ const server = http.createServer((req, res) => {
 
   // 3. PUT /api/products/:id (Admin - Edit Product)
   if (req.method === 'PUT' && pathname.startsWith('/api/products/')) {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
     const id = pathname.substring('/api/products/'.length);
     let body = '';
     req.on('data', chunk => body += chunk.toString());
@@ -220,6 +301,11 @@ const server = http.createServer((req, res) => {
 
   // 4. DELETE /api/products/:id (Admin - Delete Product)
   if (req.method === 'DELETE' && pathname.startsWith('/api/products/')) {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
     const id = pathname.substring('/api/products/'.length);
     readDb((err, db) => {
       if (err) {
@@ -253,7 +339,7 @@ const server = http.createServer((req, res) => {
     req.on('data', chunk => body += chunk.toString());
     req.on('end', () => {
       try {
-        const orderPayload = JSON.parse(body); // { customer: {...}, items: [{id, qty, currency, price}], currency, paymentMethod, subtotal }
+        const orderPayload = JSON.parse(body); // { customer: {...}, items: [{id, qty, currency, price}], currency, paymentMethod, subtotal, couponCode }
         readDb((err, db) => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -280,11 +366,44 @@ const server = http.createServer((req, res) => {
             product.stock -= item.qty; // deduct stock
           }
 
+          // Server-side coupon verification
+          let discountAmount = 0;
+          let appliedCoupon = null;
+          if (orderPayload.couponCode) {
+            const coupons = db.coupons || [];
+            const coupon = coupons.find(c => c.code.toUpperCase() === orderPayload.couponCode.toUpperCase() && c.active);
+            if (coupon) {
+              appliedCoupon = coupon.code;
+              if (coupon.type === 'percentage') {
+                discountAmount = orderPayload.subtotal * (coupon.value / 100);
+              } else if (coupon.type === 'fixed') {
+                if (orderPayload.currency === 'USD') {
+                  if (coupon.code === 'GIAM20K') {
+                    discountAmount = 1;
+                  } else {
+                    const rate = db.settings.exchangeRate || 25400;
+                    discountAmount = Math.round((coupon.value / rate) * 100) / 100;
+                  }
+                } else {
+                  discountAmount = coupon.value;
+                }
+              }
+              discountAmount = Math.min(discountAmount, orderPayload.subtotal);
+            }
+          }
+          const payableAmount = orderPayload.subtotal - discountAmount;
+
+          const shippingFee = orderPayload.currency === 'USD' ? (db.settings.shippingFeeUSD || 0) : (db.settings.shippingFeeVND || 0);
+
           const newOrder = {
             id: 'ord-' + Date.now(),
             customer: orderPayload.customer,
             items: orderPayload.items,
             subtotal: orderPayload.subtotal,
+            discountAmount: discountAmount,
+            couponCode: appliedCoupon,
+            payableAmount: payableAmount,
+            shippingFee: shippingFee,
             currency: orderPayload.currency,
             paymentMethod: orderPayload.paymentMethod,
             status: 'Pending',
@@ -300,6 +419,8 @@ const server = http.createServer((req, res) => {
               res.end(JSON.stringify({ error: 'Database write failed' }));
             } else {
               console.log(`[ORDER] Success: New order "${newOrder.id}" placed by "${newOrder.customer.name}" (${newOrder.customer.phone}) from IP ${clientIp} at ${new Date().toLocaleString('vi-VN', {timeZone: 'Asia/Ho_Chi_Minh'})}. Total: ${newOrder.subtotal} ${newOrder.currency}.`);
+              // Send Telegram notification async
+              sendTelegramNotification(db.settings, newOrder);
               res.writeHead(201, { 'Content-Type': 'application/json' });
               res.end(JSON.stringify(newOrder));
             }
@@ -313,8 +434,317 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // 5.5. POST /api/admin/login (Admin Password authentication check)
+  if (req.method === 'POST' && pathname === '/api/admin/login') {
+    let body = '';
+    req.on('data', chunk => body += chunk.toString());
+    req.on('end', () => {
+      try {
+        const { password } = JSON.parse(body);
+        const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+        if (password === adminPassword) {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: true }));
+        } else {
+          res.writeHead(401, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Mật khẩu không chính xác' }));
+        }
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Invalid JSON payload' }));
+      }
+    });
+    return;
+  }
+
+  // 5.6. POST /api/validate-coupon (Coupon Code verification check)
+  if (req.method === 'POST' && pathname === '/api/validate-coupon') {
+    let body = '';
+    req.on('data', chunk => body += chunk.toString());
+    req.on('end', () => {
+      try {
+        const { code, currency, subtotal } = JSON.parse(body);
+        if (!code) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Mã giảm giá không được để trống' }));
+          return;
+        }
+        readDb((err, db) => {
+          if (err) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Database read failed' }));
+            return;
+          }
+          const coupons = db.coupons || [];
+          const coupon = coupons.find(c => c.code.toUpperCase() === code.toUpperCase() && c.active);
+          if (!coupon) {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Mã giảm giá không hợp lệ hoặc đã hết hạn' }));
+            return;
+          }
+          
+          let discount = 0;
+          if (coupon.type === 'percentage') {
+            discount = subtotal * (coupon.value / 100);
+          } else if (coupon.type === 'fixed') {
+            if (currency === 'USD') {
+              if (coupon.code === 'GIAM20K') {
+                discount = 1; // $1 USD
+              } else {
+                const rate = db.settings.exchangeRate || 25400;
+                discount = Math.round((coupon.value / rate) * 100) / 100;
+              }
+            } else {
+              discount = coupon.value;
+            }
+          }
+          discount = Math.min(discount, subtotal);
+          
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            valid: true,
+            code: coupon.code,
+            discount: discount,
+            type: coupon.type,
+            value: coupon.value
+          }));
+        });
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Invalid JSON payload' }));
+      }
+    });
+    return;
+  }
+
+  // 5.7. GET /api/settings (Storefront general settings)
+  if (req.method === 'GET' && pathname === '/api/settings') {
+    readDb((err, db) => {
+      if (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Database read failed' }));
+      } else {
+        const publicSettings = { ...db.settings };
+        delete publicSettings.telegramToken;
+        delete publicSettings.telegramChatId;
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(publicSettings));
+      }
+    });
+    return;
+  }
+
+  // 5.8. GET /api/admin/settings (Admin complete settings view)
+  if (req.method === 'GET' && pathname === '/api/admin/settings') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+    readDb((err, db) => {
+      if (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Database read failed' }));
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(db.settings));
+      }
+    });
+    return;
+  }
+
+  // 5.9. PUT /api/admin/settings (Admin update settings)
+  if (req.method === 'PUT' && pathname === '/api/admin/settings') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+    let body = '';
+    req.on('data', chunk => body += chunk.toString());
+    req.on('end', () => {
+      try {
+        const newSettings = JSON.parse(body);
+        readDb((err, db) => {
+          if (err) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Database read failed' }));
+            return;
+          }
+          db.settings = { ...db.settings, ...newSettings };
+          writeDb(db, (writeErr) => {
+            if (writeErr) {
+              res.writeHead(500, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: 'Database write failed' }));
+            } else {
+              res.writeHead(200, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify(db.settings));
+            }
+          });
+        });
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Invalid JSON payload' }));
+      }
+    });
+    return;
+  }
+
+  // 5.10. GET /api/admin/coupons (Admin list all coupons)
+  if (req.method === 'GET' && pathname === '/api/admin/coupons') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+    readDb((err, db) => {
+      if (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Database read failed' }));
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(db.coupons || []));
+      }
+    });
+    return;
+  }
+
+  // 5.11. POST /api/admin/coupons (Admin create a coupon)
+  if (req.method === 'POST' && pathname === '/api/admin/coupons') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+    let body = '';
+    req.on('data', chunk => body += chunk.toString());
+    req.on('end', () => {
+      try {
+        const newCoupon = JSON.parse(body);
+        if (!newCoupon.code || !newCoupon.type || newCoupon.value === undefined) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Missing code, type or value' }));
+          return;
+        }
+        newCoupon.code = newCoupon.code.toUpperCase();
+        newCoupon.active = newCoupon.active !== undefined ? newCoupon.active : true;
+
+        readDb((err, db) => {
+          if (err) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Database read failed' }));
+            return;
+          }
+          if (!db.coupons) db.coupons = [];
+          if (db.coupons.find(c => c.code === newCoupon.code)) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Coupon code already exists' }));
+            return;
+          }
+          db.coupons.push(newCoupon);
+          writeDb(db, (writeErr) => {
+            if (writeErr) {
+              res.writeHead(500, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: 'Database write failed' }));
+            } else {
+              res.writeHead(201, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify(newCoupon));
+            }
+          });
+        });
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Invalid JSON payload' }));
+      }
+    });
+    return;
+  }
+
+  // 5.12. PUT /api/admin/coupons/:code (Admin edit coupon)
+  if (req.method === 'PUT' && pathname.startsWith('/api/admin/coupons/')) {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+    const code = pathname.substring('/api/admin/coupons/'.length).toUpperCase();
+    let body = '';
+    req.on('data', chunk => body += chunk.toString());
+    req.on('end', () => {
+      try {
+        const updatedFields = JSON.parse(body);
+        readDb((err, db) => {
+          if (err) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Database read failed' }));
+            return;
+          }
+          const index = db.coupons.findIndex(c => c.code === code);
+          if (index === -1) {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Coupon not found' }));
+            return;
+          }
+          db.coupons[index] = { ...db.coupons[index], ...updatedFields, code };
+          writeDb(db, (writeErr) => {
+            if (writeErr) {
+              res.writeHead(500, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: 'Database write failed' }));
+            } else {
+              res.writeHead(200, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify(db.coupons[index]));
+            }
+          });
+        });
+      } catch (e) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Invalid JSON payload' }));
+      }
+    });
+    return;
+  }
+
+  // 5.13. DELETE /api/admin/coupons/:code (Admin delete coupon)
+  if (req.method === 'DELETE' && pathname.startsWith('/api/admin/coupons/')) {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+    const code = pathname.substring('/api/admin/coupons/'.length).toUpperCase();
+    readDb((err, db) => {
+      if (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Database read failed' }));
+        return;
+      }
+      const initialLength = db.coupons.length;
+      db.coupons = db.coupons.filter(c => c.code !== code);
+      if (db.coupons.length === initialLength) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Coupon not found' }));
+        return;
+      }
+      writeDb(db, (writeErr) => {
+        if (writeErr) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Database write failed' }));
+        } else {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: true }));
+        }
+      });
+    });
+    return;
+  }
+
   // 6. GET /api/orders (Admin - View Orders)
   if (req.method === 'GET' && pathname === '/api/orders') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
     readDb((err, db) => {
       if (err) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -329,6 +759,11 @@ const server = http.createServer((req, res) => {
 
   // 7. PUT /api/orders/:id/status (Admin - Update Order Status)
   if (req.method === 'PUT' && pathname.startsWith('/api/orders/') && pathname.endsWith('/status')) {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
     const parts = pathname.split('/');
     const id = parts[3]; // format: /api/orders/:id/status
     let body = '';
@@ -414,6 +849,11 @@ const server = http.createServer((req, res) => {
 
   // 8. GET /api/analytics (Admin - Stats & Reports)
   if (req.method === 'GET' && pathname === '/api/analytics') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
     readDb((err, db) => {
       if (err) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -433,7 +873,8 @@ const server = http.createServer((req, res) => {
 
       db.orders.forEach(order => {
         const factor = order.currency === 'USD' ? rate : 1;
-        const revenueContribution = order.subtotal * factor;
+        const orderAmount = order.payableAmount !== undefined ? order.payableAmount : order.subtotal;
+        const revenueContribution = orderAmount * factor;
         
         // Sum total revenue of completed/processing orders (or all non-cancelled ones)
         if (order.status !== 'Cancelled') {

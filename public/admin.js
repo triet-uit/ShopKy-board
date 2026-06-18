@@ -91,7 +91,53 @@ const TRANSLATIONS = {
     btn_upload_image: "Tải ảnh từ thiết bị",
     toast_uploading: "Đang xử lý và nén ảnh...",
     toast_upload_success: "Tải ảnh và nén thành công!",
-    toast_upload_fail: "Lỗi tải ảnh từ thiết bị."
+    toast_upload_fail: "Lỗi tải ảnh từ thiết bị.",
+    login_title: "Yêu cầu quyền truy cập Admin",
+    login_subtitle: "Vui lòng nhập mật khẩu quản trị viên để mở khóa bảng điều khiển.",
+    login_password_label: "Mật khẩu",
+    btn_login: "Mở khóa bảng điều khiển",
+    nav_coupons: "Khuyến mãi",
+    nav_settings: "Cài đặt",
+    coupons_create_title: "Tạo Mã Giảm Giá Mới",
+    coupon_code_label: "Mã Giảm Giá",
+    coupon_type_label: "Loại Giảm Giá",
+    coupon_type_percent: "Phần trăm (%)",
+    coupon_type_fixed: "Số tiền cố định (đ)",
+    coupon_value_label: "Giá trị giảm",
+    coupon_active_label: "Kích hoạt mã này",
+    btn_create_coupon: "Tạo Mã",
+    coupons_list_title: "Danh Sách Mã Khuyến Mãi",
+    th_coupon_code: "Mã",
+    th_coupon_type: "Loại",
+    th_coupon_value: "Giá trị",
+    th_coupon_status: "Trạng thái",
+    settings_title: "Cài Đặt Cửa Hàng & Vận Hành",
+    settings_general_hdr: "Cài Đặt Chung",
+    setting_shop_name_label: "Tên Cửa Hàng",
+    setting_exchange_rate_label: "Tỷ giá VND/USD",
+    setting_shipping_vnd_label: "Phí vận chuyển (VND)",
+    setting_shipping_usd_label: "Phí vận chuyển (USD)",
+    settings_bank_hdr: "Thông Tin Chuyển Khoản (VietQR)",
+    setting_bank_name_label: "Tên Ngân hàng viết tắt",
+    setting_bank_account_label: "Số Tài Khoản Ngân Hàng",
+    setting_bank_account_name_label: "Tên Chủ Tài Khoản",
+    settings_telegram_hdr: "Thông Báo Telegram Bot",
+    settings_telegram_desc: "Nhận tin nhắn tự động khi có đơn hàng mới.",
+    setting_telegram_token_label: "Telegram Bot Token",
+    setting_telegram_chatid_label: "Telegram Chat ID",
+    btn_save_settings: "Lưu Cài Đặt",
+    btn_print_invoice: "In hóa đơn",
+    toast_settings_saved: "Đã lưu cài đặt thành công! 🌟",
+    toast_settings_save_fail: "Lỗi lưu cấu hình cài đặt.",
+    toast_settings_load_fail: "Lỗi tải cấu hình cài đặt.",
+    toast_coupon_created: "Đã tạo mã giảm giá thành công! 🌟",
+    toast_coupon_create_fail: "Lỗi tạo mã giảm giá.",
+    toast_coupon_updated: "Đã cập nhật mã giảm giá! 🌟",
+    toast_coupon_update_fail: "Lỗi cập nhật mã giảm giá.",
+    toast_coupon_deleted: "Đã xóa mã giảm giá thành công! 🌟",
+    toast_coupon_delete_fail: "Lỗi xóa mã giảm giá.",
+    toast_coupon_load_fail: "Lỗi tải danh sách mã giảm giá.",
+    confirm_delete_coupon: "Bạn có chắc chắn muốn xóa mã giảm giá \"{code}\" không?"
   },
   en: {
     page_title: "ShopKydethuong - Admin Portal",
@@ -174,7 +220,53 @@ const TRANSLATIONS = {
     btn_upload_image: "Upload from device",
     toast_uploading: "Uploading and compressing image...",
     toast_upload_success: "Image uploaded and compressed successfully!",
-    toast_upload_fail: "Failed to upload image from device."
+    toast_upload_fail: "Failed to upload image from device.",
+    login_title: "Admin Access Required",
+    login_subtitle: "Please enter your administrator password to unlock the dashboard.",
+    login_password_label: "Password",
+    btn_login: "Unlock Dashboard",
+    nav_coupons: "Coupons",
+    nav_settings: "Settings",
+    coupons_create_title: "Create New Coupon",
+    coupon_code_label: "Coupon Code",
+    coupon_type_label: "Discount Type",
+    coupon_type_percent: "Percentage (%)",
+    coupon_type_fixed: "Fixed Amount (đ)",
+    coupon_value_label: "Discount Value",
+    coupon_active_label: "Activate this coupon",
+    btn_create_coupon: "Create Coupon",
+    coupons_list_title: "Active Promo Codes",
+    th_coupon_code: "Code",
+    th_coupon_type: "Type",
+    th_coupon_value: "Value",
+    th_coupon_status: "Status",
+    settings_title: "Shop Settings & Operations",
+    settings_general_hdr: "General Settings",
+    setting_shop_name_label: "Shop Name",
+    setting_exchange_rate_label: "VND/USD Exchange Rate",
+    setting_shipping_vnd_label: "Shipping Fee (VND)",
+    setting_shipping_usd_label: "Shipping Fee (USD)",
+    settings_bank_hdr: "VietQR Bank Transfer Details",
+    setting_bank_name_label: "Bank Name Abbreviation",
+    setting_bank_account_label: "Bank Account Number",
+    setting_bank_account_name_label: "Account Holder Name",
+    settings_telegram_hdr: "Telegram Bot Notifications",
+    settings_telegram_desc: "Receive instant notifications when orders are placed.",
+    setting_telegram_token_label: "Telegram Bot Token",
+    setting_telegram_chatid_label: "Telegram Chat ID",
+    btn_save_settings: "Save Settings",
+    btn_print_invoice: "Print Invoice",
+    toast_settings_saved: "Settings saved successfully! 🌟",
+    toast_settings_save_fail: "Failed to save operational settings.",
+    toast_settings_load_fail: "Failed to load settings configuration.",
+    toast_coupon_created: "Coupon created successfully! 🌟",
+    toast_coupon_create_fail: "Failed to create new coupon.",
+    toast_coupon_updated: "Coupon details updated! 🌟",
+    toast_coupon_update_fail: "Failed to update coupon details.",
+    toast_coupon_deleted: "Coupon deleted successfully! 🌟",
+    toast_coupon_delete_fail: "Failed to delete coupon.",
+    toast_coupon_load_fail: "Failed to load active coupons list.",
+    confirm_delete_coupon: "Are you sure you want to delete coupon \"{code}\"?"
   }
 };
 
@@ -216,6 +308,10 @@ function applyLanguage() {
     loadOrders();
   } else if (currentTab === 'products') {
     loadProducts();
+  } else if (currentTab === 'coupons') {
+    loadCoupons();
+  } else if (currentTab === 'settings') {
+    loadSettingsData();
   }
 }
 
@@ -258,9 +354,47 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Load Initial Dashboard Tab
-  applyLanguage();
+  // Check session storage for admin credentials
+  const savedPassword = sessionStorage.getItem('admin_password');
+  const loginModal = document.getElementById('modal-admin-login');
+  if (savedPassword) {
+    if (loginModal) loginModal.style.display = 'none';
+    applyLanguage();
+  } else {
+    if (loginModal) loginModal.style.display = 'flex';
+    applyLanguage();
+  }
 });
+
+async function handleAdminLogin(event) {
+  event.preventDefault();
+  const passwordInput = document.getElementById('admin-password-input');
+  const errorMsg = document.getElementById('login-error-msg');
+  if (!passwordInput || !errorMsg) return;
+
+  const password = passwordInput.value;
+  try {
+    const res = await fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Mật khẩu không chính xác');
+
+    sessionStorage.setItem('admin_password', password);
+    errorMsg.style.display = 'none';
+    
+    const loginModal = document.getElementById('modal-admin-login');
+    if (loginModal) loginModal.style.display = 'none';
+
+    // Trigger tab loading
+    await switchTab(currentTab);
+  } catch (err) {
+    errorMsg.style.display = 'block';
+    errorMsg.innerText = err.message || 'Mật khẩu không chính xác';
+  }
+}
 
 // ==========================================
 // Navigation & Tab Switcher
@@ -294,6 +428,10 @@ async function switchTab(tabName) {
     await loadOrders();
   } else if (tabName === 'products') {
     await loadProducts();
+  } else if (tabName === 'coupons') {
+    await loadCoupons();
+  } else if (tabName === 'settings') {
+    await loadSettingsData();
   }
 }
 
@@ -302,7 +440,9 @@ async function switchTab(tabName) {
 // ==========================================
 async function loadAnalytics() {
   try {
-    const res = await fetch('/api/analytics');
+    const res = await fetch('/api/analytics', {
+      headers: { 'x-admin-password': sessionStorage.getItem('admin_password') || '' }
+    });
     if (!res.ok) throw new Error('Failed to fetch analytics');
     const stats = await res.json();
 
@@ -384,7 +524,9 @@ async function loadAnalytics() {
 // ==========================================
 async function loadOrders() {
   try {
-    const res = await fetch('/api/orders');
+    const res = await fetch('/api/orders', {
+      headers: { 'x-admin-password': sessionStorage.getItem('admin_password') || '' }
+    });
     if (!res.ok) throw new Error('Failed to fetch orders');
     orders = await res.json();
 
@@ -400,7 +542,29 @@ async function loadOrders() {
     orders.forEach(order => {
       const dateStr = new Date(order.createdAt).toLocaleString(activeLang === 'vi' ? 'vi-VN' : 'en-US');
       const itemsList = order.items.map(item => `${item.qty}x ${escapeHTML(item.name)}`).join('<br>');
-      const totalText = order.currency === 'VND' ? order.subtotal.toLocaleString('vi-VN') + ' đ' : '$' + order.subtotal.toFixed(2);
+      
+      const finalAmount = order.payableAmount !== undefined ? order.payableAmount : order.subtotal;
+      const shippingFee = order.shippingFee || 0;
+      const totalWithFee = finalAmount + shippingFee;
+      const totalText = order.currency === 'VND' ? totalWithFee.toLocaleString('vi-VN') + ' đ' : '$' + totalWithFee.toFixed(2);
+      
+      let discountDetails = '';
+      if (order.discountAmount && order.discountAmount > 0) {
+        const discountText = order.currency === 'VND' ? order.discountAmount.toLocaleString('vi-VN') + ' đ' : '$' + order.discountAmount.toFixed(2);
+        discountDetails = `
+          <div style="font-size:0.72rem; color:#10b981; margin-top:0.25rem;">
+            ${activeLang === 'vi' ? 'Đã giảm' : 'Discounted'}: ${discountText} (Mã: ${order.couponCode || 'N/A'})
+          </div>
+        `;
+      }
+      if (shippingFee > 0) {
+        const shippingText = order.currency === 'VND' ? shippingFee.toLocaleString('vi-VN') + ' đ' : '$' + shippingFee.toFixed(2);
+        discountDetails += `
+          <div style="font-size:0.72rem; color:var(--text-secondary); margin-top:0.15rem;">
+            ${activeLang === 'vi' ? 'Phí ship' : 'Shipping'}: +${shippingText}
+          </div>
+        `;
+      }
       
       // Payment Method display translation
       let displayedPayment = order.paymentMethod;
@@ -433,7 +597,19 @@ async function loadOrders() {
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td class="font-bold" style="color:var(--accent-cyan);">${order.id}</td>
+        <td class="font-bold" style="color:var(--accent-cyan);">
+          <div>${order.id}</div>
+          <div style="margin-top: 0.35rem;">
+            <button class="btn-view-proof" onclick="printInvoice('${order.id}')" style="background: rgba(0, 188, 212, 0.12); border-color: rgba(0, 188, 212, 0.25); color: var(--accent-cyan); font-size: 0.72rem; padding: 0.2rem 0.5rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 11px; height: 11px;">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+              </svg>
+              <span>${t('btn_print_invoice')}</span>
+            </button>
+          </div>
+        </td>
         <td>
           <div class="font-bold">${escapeHTML(order.customer.name)}</div>
           <div style="font-size:0.75rem; color:var(--text-muted);">${escapeHTML(order.customer.email)}</div>
@@ -443,7 +619,10 @@ async function loadOrders() {
           <div style="font-size:0.75rem; color:var(--text-secondary); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHTML(order.customer.address)}">${escapeHTML(order.customer.address)}</div>
         </td>
         <td style="font-size:0.78rem; line-height:1.4;">${itemsList}</td>
-        <td class="font-bold">${totalText}</td>
+        <td class="font-bold">
+          <div>${totalText}</div>
+          ${discountDetails}
+        </td>
         <td>
           <div>${displayedPayment}</div>
           ${proofHtml}
@@ -471,7 +650,10 @@ async function updateOrderStatus(orderId, newStatus) {
   try {
     const res = await fetch(`/api/orders/${orderId}/status`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-password': sessionStorage.getItem('admin_password') || ''
+      },
       body: JSON.stringify({ status: newStatus })
     });
     const data = await res.json();
@@ -602,7 +784,10 @@ async function handleSaveProduct(event) {
   try {
     const res = await fetch(url, {
       method,
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-password': sessionStorage.getItem('admin_password') || ''
+      },
       body: JSON.stringify(payload)
     });
 
@@ -624,7 +809,8 @@ async function deleteProduct(productId) {
   if (confirm(t('confirm_delete', { name: p.name }))) {
     try {
       const res = await fetch(`/api/products/${productId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: { 'x-admin-password': sessionStorage.getItem('admin_password') || '' }
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to delete product');
@@ -765,5 +951,319 @@ function resizeAndCompressImage(file, maxWidth = 500, maxHeight = 500, quality =
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
+}
+
+function handleCouponTypeChange() {
+  const typeSelect = document.getElementById('coupon-type');
+  const valueInput = document.getElementById('coupon-value');
+  if (!typeSelect || !valueInput) return;
+
+  if (typeSelect.value === 'percentage') {
+    valueInput.placeholder = '10';
+    valueInput.max = '100';
+  } else {
+    valueInput.placeholder = '20000';
+    valueInput.removeAttribute('max');
+  }
+}
+
+async function loadCoupons() {
+  try {
+    const res = await fetch('/api/admin/coupons', {
+      headers: { 'x-admin-password': sessionStorage.getItem('admin_password') || '' }
+    });
+    if (!res.ok) throw new Error('Failed to fetch coupons');
+    const coupons = await res.json();
+
+    const tbody = document.getElementById('coupons-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (coupons.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="color:var(--text-muted); padding:2rem;">Không có mã giảm giá nào</td></tr>`;
+      return;
+    }
+
+    coupons.forEach(coupon => {
+      const typeText = coupon.type === 'percentage' ? (activeLang === 'vi' ? 'Phần trăm' : 'Percentage') : (activeLang === 'vi' ? 'Cố định' : 'Fixed Amount');
+      const valText = coupon.type === 'percentage' ? `${coupon.value}%` : `${coupon.value.toLocaleString('vi-VN')} đ`;
+      
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="font-bold">${coupon.code}</td>
+        <td>${typeText}</td>
+        <td class="font-bold" style="color: var(--accent-cyan);">${valText}</td>
+        <td>
+          <button class="status-tag ${coupon.active ? 'completed' : 'cancelled'}" onclick="toggleCouponStatus('${coupon.code}', ${!coupon.active})" style="cursor:pointer; border:none; padding: 0.2rem 0.6rem; border-radius: 4px;">
+            ${coupon.active ? (activeLang === 'vi' ? 'Bật' : 'Active') : (activeLang === 'vi' ? 'Tắt' : 'Inactive')}
+          </button>
+        </td>
+        <td class="text-center">
+          <button class="btn-table-action btn-delete-action" onclick="deleteCoupon('${coupon.code}')" title="Delete Coupon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    console.error(err);
+    showToast(t('toast_coupon_load_fail'), 'danger');
+  }
+}
+
+async function handleSaveCoupon(event) {
+  event.preventDefault();
+  const code = document.getElementById('coupon-code').value.trim().toUpperCase();
+  const type = document.getElementById('coupon-type').value;
+  const value = parseFloat(document.getElementById('coupon-value').value) || 0;
+  const active = document.getElementById('coupon-active').checked;
+
+  const payload = { code, type, value, active };
+
+  try {
+    const res = await fetch('/api/admin/coupons', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-password': sessionStorage.getItem('admin_password') || ''
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to create coupon');
+
+    showToast(t('toast_coupon_created'), 'success');
+    document.getElementById('coupon-form').reset();
+    await loadCoupons();
+  } catch (err) {
+    showToast(err.message || t('toast_coupon_create_fail'), 'danger');
+  }
+}
+
+async function toggleCouponStatus(code, newStatus) {
+  try {
+    const res = await fetch(`/api/admin/coupons/${code}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-password': sessionStorage.getItem('admin_password') || ''
+      },
+      body: JSON.stringify({ active: newStatus })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to update coupon');
+
+    showToast(t('toast_coupon_updated'), 'success');
+    await loadCoupons();
+  } catch (err) {
+    showToast(t('toast_coupon_update_fail'), 'danger');
+  }
+}
+
+async function deleteCoupon(code) {
+  if (confirm(t('confirm_delete_coupon', { code }))) {
+    try {
+      const res = await fetch(`/api/admin/coupons/${code}`, {
+        method: 'DELETE',
+        headers: { 'x-admin-password': sessionStorage.getItem('admin_password') || '' }
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to delete coupon');
+
+      showToast(t('toast_coupon_deleted'), 'warning');
+      await loadCoupons();
+    } catch (err) {
+      showToast(t('toast_coupon_delete_fail'), 'danger');
+    }
+  }
+}
+
+async function loadSettingsData() {
+  try {
+    const res = await fetch('/api/admin/settings', {
+      headers: { 'x-admin-password': sessionStorage.getItem('admin_password') || '' }
+    });
+    if (!res.ok) throw new Error('Failed to fetch settings');
+    const settingsData = await res.json();
+
+    document.getElementById('setting-shop-name').value = settingsData.shopName || '';
+    document.getElementById('setting-exchange-rate').value = settingsData.exchangeRate || 25400;
+    document.getElementById('setting-shipping-vnd').value = settingsData.shippingFeeVND !== undefined ? settingsData.shippingFeeVND : 30000;
+    document.getElementById('setting-shipping-usd').value = settingsData.shippingFeeUSD !== undefined ? settingsData.shippingFeeUSD : 1.2;
+    document.getElementById('setting-bank-name').value = settingsData.bankName || 'VCB';
+    document.getElementById('setting-bank-account').value = settingsData.bankAccount || '';
+    document.getElementById('setting-bank-account-name').value = settingsData.bankAccountName || '';
+    document.getElementById('setting-telegram-token').value = settingsData.telegramToken || '';
+    document.getElementById('setting-telegram-chatid').value = settingsData.telegramChatId || '';
+  } catch (err) {
+    console.error(err);
+    showToast(t('toast_settings_load_fail'), 'danger');
+  }
+}
+
+async function handleSaveSettings(event) {
+  event.preventDefault();
+  const shopName = document.getElementById('setting-shop-name').value.trim();
+  const exchangeRate = parseInt(document.getElementById('setting-exchange-rate').value) || 25400;
+  const shippingFeeVND = parseInt(document.getElementById('setting-shipping-vnd').value) || 0;
+  const shippingFeeUSD = parseFloat(document.getElementById('setting-shipping-usd').value) || 0;
+  const bankName = document.getElementById('setting-bank-name').value.trim();
+  const bankAccount = document.getElementById('setting-bank-account').value.trim();
+  const bankAccountName = document.getElementById('setting-bank-account-name').value.trim();
+  const telegramToken = document.getElementById('setting-telegram-token').value.trim();
+  const telegramChatId = document.getElementById('setting-telegram-chatid').value.trim();
+
+  const payload = {
+    shopName,
+    exchangeRate,
+    shippingFeeVND,
+    shippingFeeUSD,
+    bankName,
+    bankAccount,
+    bankAccountName,
+    telegramToken,
+    telegramChatId
+  };
+
+  try {
+    const res = await fetch('/api/admin/settings', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-password': sessionStorage.getItem('admin_password') || ''
+      },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to save settings');
+
+    showToast(t('toast_settings_saved'), 'success');
+    await loadSettingsData();
+  } catch (err) {
+    showToast(t('toast_settings_save_fail'), 'danger');
+  }
+}
+
+function printInvoice(orderId) {
+  const order = orders.find(o => o.id === orderId);
+  if (!order) return;
+
+  const dateStr = new Date(order.createdAt).toLocaleString(activeLang === 'vi' ? 'vi-VN' : 'en-US');
+  const itemsHtml = order.items.map(item => `
+    <tr>
+      <td style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">${escapeHTML(item.name)}</td>
+      <td style="padding: 0.5rem 0; text-align: center; border-bottom: 1px solid #eee;">${item.qty}</td>
+      <td style="padding: 0.5rem 0; text-align: right; border-bottom: 1px solid #eee;">${order.currency === 'VND' ? item.price.toLocaleString('vi-VN') + ' đ' : '$' + item.price.toFixed(2)}</td>
+      <td style="padding: 0.5rem 0; text-align: right; border-bottom: 1px solid #eee;">${order.currency === 'VND' ? (item.price * item.qty).toLocaleString('vi-VN') + ' đ' : '$' + (item.price * item.qty).toFixed(2)}</td>
+    </tr>
+  `).join('');
+
+  const finalAmount = order.payableAmount !== undefined ? order.payableAmount : order.subtotal;
+  const shippingFee = order.shippingFee || 0;
+  const totalAmount = finalAmount + shippingFee;
+
+  const discountValStr = order.discountAmount ? `-${order.currency === 'VND' ? order.discountAmount.toLocaleString('vi-VN') + ' đ' : '$' + order.discountAmount.toFixed(2)} (${order.couponCode})` : '';
+
+  const printWindow = window.open('', '_blank', 'width=800,height=600');
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Hóa đơn ${order.id}</title>
+        <style>
+          body { font-family: 'Inter', sans-serif; color: #333; margin: 0; padding: 2rem; line-height: 1.5; font-size: 0.9rem; }
+          .header { text-align: center; margin-bottom: 2rem; border-bottom: 2px solid #333; padding-bottom: 1rem; }
+          .logo { font-size: 1.8rem; font-weight: 800; text-transform: uppercase; margin: 0; }
+          .logo span { color: #00bcd4; }
+          .title { font-size: 1.2rem; font-weight: 700; margin-top: 0.5rem; text-transform: uppercase; letter-spacing: 1px; }
+          .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+          .info-block h4 { margin: 0 0 0.5rem 0; text-transform: uppercase; font-size: 0.8rem; color: #666; border-bottom: 1px solid #eee; padding-bottom: 0.25rem; }
+          .info-block p { margin: 0.25rem 0; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
+          th { border-bottom: 2px solid #eee; padding: 0.5rem 0; text-align: left; font-size: 0.8rem; color: #666; text-transform: uppercase; }
+          .totals-table { width: 50%; margin-left: auto; margin-top: 1rem; }
+          .totals-table td { padding: 0.35rem 0; }
+          .totals-table tr.grand-total { font-weight: bold; font-size: 1.1rem; border-top: 1.5px solid #333; }
+          .footer { text-align: center; margin-top: 3rem; font-size: 0.8rem; color: #777; border-top: 1px dashed #ccc; padding-top: 1rem; }
+          @media print {
+            body { padding: 0; }
+            .no-print { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1 class="logo">SHOP<span>KY</span></h1>
+          <div class="title">${activeLang === 'vi' ? 'HÓA ĐƠN GIAO HÀNG' : 'INVOICE / RECEIPT'}</div>
+          <p style="margin: 0.25rem 0 0 0; font-size: 0.8rem; color: #777;">ID: ${order.id} | ${dateStr}</p>
+        </div>
+        
+        <div class="info-grid">
+          <div class="info-block">
+            <h4>${activeLang === 'vi' ? 'Thông tin khách hàng' : 'Customer Info'}</h4>
+            <p><strong>${escapeHTML(order.customer.name)}</strong></p>
+            <p>${activeLang === 'vi' ? 'SĐT' : 'Phone'}: ${order.customer.phone}</p>
+            <p>Email: ${order.customer.email || 'N/A'}</p>
+          </div>
+          <div class="info-block">
+            <h4>${activeLang === 'vi' ? 'Địa chỉ giao hàng' : 'Shipping Address'}</h4>
+            <p>${escapeHTML(order.customer.address)}</p>
+            <p style="margin-top: 0.5rem;"><strong>${activeLang === 'vi' ? 'Phương thức' : 'Payment'}:</strong> ${order.paymentMethod}</p>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>${activeLang === 'vi' ? 'Sản phẩm' : 'Product Name'}</th>
+              <th style="text-align: center; width: 10%;">${activeLang === 'vi' ? 'SL' : 'Qty'}</th>
+              <th style="text-align: right; width: 20%;">${activeLang === 'vi' ? 'Đơn giá' : 'Unit Price'}</th>
+              <th style="text-align: right; width: 20%;">${activeLang === 'vi' ? 'Thành tiền' : 'Subtotal'}</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemsHtml}
+          </tbody>
+        </table>
+
+        <table class="totals-table">
+          <tr>
+            <td>${activeLang === 'vi' ? 'Tổng phụ:' : 'Items Subtotal:'}</td>
+            <td style="text-align: right;">${order.currency === 'VND' ? order.subtotal.toLocaleString('vi-VN') + ' đ' : '$' + order.subtotal.toFixed(2)}</td>
+          </tr>
+          ${order.discountAmount ? `
+          <tr style="color: #10b981;">
+            <td>${activeLang === 'vi' ? 'Chiết khấu:' : 'Discount:'}</td>
+            <td style="text-align: right;">${discountValStr}</td>
+          </tr>
+          ` : ''}
+          <tr>
+            <td>${activeLang === 'vi' ? 'Phí vận chuyển:' : 'Shipping Fee:'}</td>
+            <td style="text-align: right;">${shippingFee > 0 ? (order.currency === 'VND' ? shippingFee.toLocaleString('vi-VN') + ' đ' : '$' + shippingFee.toFixed(2)) : (activeLang === 'vi' ? 'Miễn phí' : 'Free')}</td>
+          </tr>
+          <tr class="grand-total">
+            <td>${activeLang === 'vi' ? 'Tổng thanh toán:' : 'Total Payable:'}</td>
+            <td style="text-align: right; color: #00bcd4;">${order.currency === 'VND' ? totalAmount.toLocaleString('vi-VN') + ' đ' : '$' + totalAmount.toFixed(2)}</td>
+          </tr>
+        </table>
+
+        <div class="footer">
+          <p>${activeLang === 'vi' ? 'Cảm ơn quý khách đã mua sắm tại ShopKy!' : 'Thank you for shopping at ShopKy!'}</p>
+          <p style="font-size: 0.7rem; color: #aaa;">&copy; 2026 ShopKy. All rights reserved.</p>
+        </div>
+
+        <script>
+          window.onload = function() {
+            window.print();
+            setTimeout(function() { window.close(); }, 500);
+          }
+        </script>
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
 }
 
