@@ -810,9 +810,9 @@ async function handleTrackOrder() {
         </div>
         <div style="border-top:1px dashed var(--border-glass); padding-top:0.75rem; font-size:0.8rem; display:flex; flex-direction:column; gap:0.3rem;">
           ${matched.items.map(item => `
-            <div style="display:flex; justify-content:space-between;">
-              <span>${item.qty}x ${escapeHTML(item.name)}</span>
-              <span>${formatValue(item.price * item.qty, matched.currency)}</span>
+            <div style="display:flex; justify-content:space-between; gap:0.5rem;">
+              <span style="word-break:break-word; flex-grow:1; margin-right:0.5rem;">${item.qty}x ${escapeHTML(item.name)}</span>
+              <span style="flex-shrink:0; white-space:nowrap;">${formatValue(item.price * item.qty, matched.currency)}</span>
             </div>
           `).join('')}
         </div>
