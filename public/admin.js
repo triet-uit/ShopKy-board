@@ -87,7 +87,11 @@ const TRANSLATIONS = {
     modal_proof_date: "Thời gian gửi",
     modal_proof_img: "Hình ảnh đối soát",
     modal_proof_empty: "Chưa gửi minh chứng",
-    modal_proof_no_img: "Không có ảnh đính kèm"
+    modal_proof_no_img: "Không có ảnh đính kèm",
+    btn_upload_image: "Tải ảnh từ thiết bị",
+    toast_uploading: "Đang xử lý và nén ảnh...",
+    toast_upload_success: "Tải ảnh và nén thành công!",
+    toast_upload_fail: "Lỗi tải ảnh từ thiết bị."
   },
   en: {
     page_title: "ShopKydethuong - Admin Portal",
@@ -166,7 +170,11 @@ const TRANSLATIONS = {
     modal_proof_date: "Submitted At",
     modal_proof_img: "Transaction Screenshot",
     modal_proof_empty: "No proof submitted yet",
-    modal_proof_no_img: "No screenshot uploaded"
+    modal_proof_no_img: "No screenshot uploaded",
+    btn_upload_image: "Upload from device",
+    toast_uploading: "Uploading and compressing image...",
+    toast_upload_success: "Image uploaded and compressed successfully!",
+    toast_upload_fail: "Failed to upload image from device."
   }
 };
 
@@ -702,5 +710,60 @@ function viewPaymentProof(orderId) {
 
   const modal = document.getElementById('modal-payment-proof');
   if (modal) modal.classList.add('open');
+}
+
+async function handleProductImageUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  try {
+    showToast(t('toast_uploading'), 'info');
+    const base64 = await resizeAndCompressImage(file, 500, 500, 0.45);
+    const urlInput = document.getElementById('product-image');
+    if (urlInput) {
+      urlInput.value = base64;
+    }
+    showToast(t('toast_upload_success'), 'success');
+  } catch (err) {
+    console.error(err);
+    showToast(t('toast_upload_fail'), 'danger');
+  } finally {
+    event.target.value = ''; // clear selector
+  }
+}
+
+function resizeAndCompressImage(file, maxWidth = 500, maxHeight = 500, quality = 0.45) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        let width = img.width;
+        let height = img.height;
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(dataUrl);
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }
 
