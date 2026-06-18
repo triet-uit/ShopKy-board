@@ -68,6 +68,7 @@ const TRANSLATIONS = {
     track_title: "Theo dõi trạng thái đơn hàng",
     track_placeholder: "Nhập Mã đơn hàng của bạn (ví dụ: ord-172324...)",
     btn_search: "Tìm kiếm",
+    my_orders_title: "Đơn hàng bạn đã mua",
     
     // Dynamic JS texts
     empty_cart: "Giỏ hàng của bạn đang trống.",
@@ -139,6 +140,7 @@ const TRANSLATIONS = {
     track_title: "Track Order Status",
     track_placeholder: "Enter Order ID (e.g. ord-172324...)",
     btn_search: "Search",
+    my_orders_title: "Your Purchased Orders",
     
     // Dynamic JS texts
     empty_cart: "Your cart is empty.",
@@ -237,6 +239,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Load products catalog
   await loadProducts();
+
+  // Check notifications for order statuses
+  checkOrderStatusNotifications();
 });
 
 async function loadProducts() {
@@ -718,6 +723,9 @@ async function handleCheckout(event) {
 
     openModal('modal-order-success');
     
+    // Save order to history
+    saveMyOrder(data);
+    
     // Clear cart
     cart = [];
     saveCart();
@@ -743,8 +751,13 @@ function closeOrderSuccess() {
 // Track Order Functionalities
 // ==========================================
 function openTrackOrderModal() {
-  document.getElementById('track-order-id-input').value = '';
-  document.getElementById('track-order-result').innerHTML = '';
+  if (document.getElementById('track-order-id-input')) {
+    document.getElementById('track-order-id-input').value = '';
+  }
+  if (document.getElementById('track-order-result')) {
+    document.getElementById('track-order-result').innerHTML = '';
+  }
+  renderMyOrdersList();
   openModal('modal-track-order');
 }
 
@@ -769,6 +782,9 @@ async function handleTrackOrder() {
       resultDiv.innerHTML = `<div class="empty-cart-text">${t('order_not_found', { id: orderId })}</div>`;
       return;
     }
+
+    // Sync status in history
+    updateMyOrderStatusInHistory(matched.id, matched.status);
 
     // Render receipt track
     const dateStr = new Date(matched.createdAt).toLocaleString(activeLang === 'vi' ? 'vi-VN' : 'en-US');
@@ -986,4 +1002,118 @@ function resizeAndCompressImage(file, maxWidth = 500, maxHeight = 500, quality =
     reader.readAsDataURL(file);
   });
 }
+
+// ==========================================
+// Customer Order History & Notifications
+// ==========================================
+function saveMyOrder(order) {
+  let myOrders = JSON.parse(localStorage.getItem('shopky_my_orders')) || [];
+  const orderSummary = {
+    id: order.id,
+    subtotal: order.subtotal,
+    currency: order.currency,
+    status: order.status,
+    createdAt: order.createdAt || new Date().toISOString()
+  };
+  myOrders.unshift(orderSummary);
+  if (myOrders.length > 20) myOrders.pop();
+  localStorage.setItem('shopky_my_orders', JSON.stringify(myOrders));
+}
+
+function updateMyOrderStatusInHistory(orderId, status) {
+  let myOrders = JSON.parse(localStorage.getItem('shopky_my_orders')) || [];
+  let matched = myOrders.find(o => o.id.toLowerCase() === orderId.toLowerCase());
+  if (matched && matched.status !== status) {
+    matched.status = status;
+    localStorage.setItem('shopky_my_orders', JSON.stringify(myOrders));
+    renderMyOrdersList();
+  }
+}
+
+function renderMyOrdersList() {
+  const section = document.getElementById('my-orders-section');
+  const list = document.getElementById('my-orders-list');
+  if (!section || !list) return;
+
+  const myOrders = JSON.parse(localStorage.getItem('shopky_my_orders')) || [];
+  if (myOrders.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+
+  section.style.display = 'block';
+  list.innerHTML = '';
+
+  myOrders.forEach(order => {
+    const dateStr = new Date(order.createdAt).toLocaleDateString(activeLang === 'vi' ? 'vi-VN' : 'en-US');
+    const totalStr = formatValue(order.subtotal, order.currency);
+    
+    let statusText = order.status;
+    if (activeLang === 'vi') {
+      if (order.status === 'Pending') statusText = 'Đang chờ';
+      if (order.status === 'Processing') statusText = 'Đang giao';
+      if (order.status === 'Completed') statusText = 'Hoàn thành';
+      if (order.status === 'Cancelled') statusText = 'Đã hủy';
+    }
+
+    const item = document.createElement('div');
+    item.className = 'my-order-item';
+    item.onclick = () => {
+      if (document.getElementById('track-order-id-input')) {
+        document.getElementById('track-order-id-input').value = order.id;
+        handleTrackOrder();
+      }
+    };
+
+    item.innerHTML = `
+      <div>
+        <span class="font-bold" style="font-size:0.82rem; color:var(--accent-cyan);">${order.id}</span>
+        <div style="font-size:0.7rem; color:var(--text-muted); margin-top: 0.15rem;">${dateStr} - ${totalStr}</div>
+      </div>
+      <span class="status-tag ${order.status.toLowerCase()}" style="font-size:0.68rem; padding: 0.15rem 0.4rem; border-radius: 4px;">${statusText}</span>
+    `;
+    list.appendChild(item);
+  });
+}
+
+async function checkOrderStatusNotifications() {
+  let myOrders = JSON.parse(localStorage.getItem('shopky_my_orders')) || [];
+  if (myOrders.length === 0) return;
+
+  try {
+    const res = await fetch('/api/orders');
+    if (!res.ok) return;
+    const allOrders = await res.json();
+
+    let updated = false;
+    myOrders.forEach(myOrder => {
+      const dbOrder = allOrders.find(o => o.id === myOrder.id);
+      if (dbOrder && dbOrder.status !== myOrder.status) {
+        let statusText = dbOrder.status;
+        if (activeLang === 'vi') {
+          if (dbOrder.status === 'Pending') statusText = 'Đang chờ';
+          if (dbOrder.status === 'Processing') statusText = 'Đang giao';
+          if (dbOrder.status === 'Completed') statusText = 'Hoàn thành';
+          if (dbOrder.status === 'Cancelled') statusText = 'Đã hủy';
+        }
+        
+        showToast(
+          activeLang === 'vi' 
+            ? `Trạng thái đơn hàng "${myOrder.id}" của bạn đã đổi thành: "${statusText}" 📦`
+            : `Your order "${myOrder.id}" status has changed to: "${dbOrder.status}" 📦`,
+          'info'
+        );
+        myOrder.status = dbOrder.status;
+        updated = true;
+      }
+    });
+
+    if (updated) {
+      localStorage.setItem('shopky_my_orders', JSON.stringify(myOrders));
+    }
+  } catch (err) {
+    console.error('Error checking order status notifications:', err);
+  }
+}
+
 

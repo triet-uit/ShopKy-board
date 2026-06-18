@@ -1447,3 +1447,25 @@ button, select, input, textarea {
   transform: translateY(0);
 }
 
+/* ==========================================================================
+   MY RECENT ORDERS ITEMS
+   ========================================================================== */
+.my-order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-glass);
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: all 0.2s var(--transition-ease);
+}
+
+.my-order-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--accent-cyan);
+  transform: translateX(2px);
+}
+
+

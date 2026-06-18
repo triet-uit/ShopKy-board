@@ -327,11 +327,17 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="form-row">
+        <div id="my-orders-section" style="margin-bottom: 1.25rem; display: none;">
+          <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; border-bottom: 1px dashed var(--border-glass); padding-bottom: 0.25rem;" data-translate="my_orders_title">Your Orders</h4>
+          <div id="my-orders-list" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 150px; overflow-y: auto; padding-right: 0.25rem;">
+            <!-- Dynamic list -->
+          </div>
+        </div>
+        <div class="form-row" style="margin-top: 1rem;">
           <input type="text" id="track-order-id-input" placeholder="Enter Order ID (e.g. ord-172324...)" data-translate-placeholder="track_placeholder">
           <button class="btn-primary" onclick="handleTrackOrder()" data-translate="btn_search">Search</button>
         </div>
-        <div id="track-order-result" class="track-order-result">
+        <div id="track-order-result" class="track-order-result" style="margin-top: 1rem;">
           <!-- Dynamic Order Track Details -->
         </div>
       </div>
