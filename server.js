@@ -780,7 +780,6 @@ const server = http.createServer((req, res) => {
       // Strip passwords for safety
       const safeUsers = users.map(u => {
         const publicUser = { ...u };
-        delete publicUser.password;
         return publicUser;
       });
       res.writeHead(200, { 'Content-Type': 'application/json' });

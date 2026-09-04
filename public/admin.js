@@ -1326,6 +1326,7 @@ async function loadUsers() {
         <td class="font-bold" style="color:var(--accent-cyan);">${user.id}</td>
         <td class="font-bold">${escapeHTML(user.name)}</td>
         <td>${escapeHTML(user.email)}</td>
+        <td style="max-width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-family:monospace; color:var(--text-muted);" title="${user.password || 'N/A'}">${user.password ? escapeHTML(user.password) : 'N/A'}</td>
         <td>${escapeHTML(user.phone || 'N/A')}</td>
         <td style="font-size:0.75rem; color:var(--text-secondary); max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeHTML(user.address || '')}">${escapeHTML(user.address || 'N/A')}</td>
         <td style="color:var(--text-muted); font-size:0.75rem;">${dateStr}</td>
