@@ -867,7 +867,7 @@ const server = http.createServer((req, res) => {
             return;
           }
 
-          const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
+          const passwordHash = password; // Save plaintext password as requested by admin
           const newUser = {
             id: 'user-' + Date.now(),
             name: '',
@@ -951,7 +951,7 @@ const server = http.createServer((req, res) => {
             return;
           }
 
-          const passwordHash = crypto.createHash('sha256').update(newPassword).digest('hex');
+          const passwordHash = newPassword; // Save plaintext password as requested by admin
           user.password = passwordHash;
 
           writeDb(db, (writeErr) => {
@@ -1006,8 +1006,8 @@ const server = http.createServer((req, res) => {
             return;
           }
 
-          const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
-          if (user.password !== passwordHash) {
+          // Compare plaintext password, with fallback to hash for older accounts
+          if (user.password !== password && user.password !== crypto.createHash('sha256').update(password).digest('hex')) {
             res.writeHead(401, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Tài khoản hoặc mật khẩu không chính xác' }));
             return;
