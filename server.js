@@ -123,6 +123,12 @@ function checkAdminAuth(req) {
   return clientPass === adminPassword;
 }
 
+// ... other code ...
+  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+  const clientPass = req.headers['x-admin-password'];
+  return clientPass === adminPassword;
+}
+
 function getAuthUser(req) {
   const authHeader = req.headers['authorization'];
   if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
@@ -560,6 +566,15 @@ const server = http.createServer((req, res) => {
         res.end(JSON.stringify(publicSettings));
       }
     });
+    return;
+  }
+
+  // Debug endpoint
+  if (req.method === 'GET' && pathname === '/api/debug-bin') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      binId: process.env.JSONBIN_BIN_ID || '6a9a5023f5f4af5e29687395'
+    }));
     return;
   }
 
