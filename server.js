@@ -32,13 +32,15 @@ const MIME_TYPES = {
 
 // Database helper functions
 function readDb(callback) {
-  if (process.env.JSONBIN_KEY && process.env.JSONBIN_BIN_ID) {
+  const binKey = process.env.JSONBIN_KEY || '$2a$10$rkUPFSk/HIXyM3ifAXj2vuRSJOUcJG7ea3BKGLLtRoQKiKYsTy6wu';
+  const binId = process.env.JSONBIN_BIN_ID || '6a9a5023f5f4af5e29687395';
+  if (binKey && binId) {
     const options = {
       hostname: 'api.jsonbin.io',
-      path: `/v3/b/${process.env.JSONBIN_BIN_ID}/latest`,
+      path: `/v3/b/${binId}/latest`,
       method: 'GET',
       headers: {
-        'X-Master-Key': process.env.JSONBIN_KEY,
+        'X-Master-Key': binKey,
         'X-Bin-Meta': 'false'
       }
     };
@@ -77,13 +79,15 @@ function readDb(callback) {
 
 function writeDb(data, callback) {
   const body = JSON.stringify(data, null, 2);
-  if (process.env.JSONBIN_KEY && process.env.JSONBIN_BIN_ID) {
+  const binKey = process.env.JSONBIN_KEY || '$2a$10$rkUPFSk/HIXyM3ifAXj2vuRSJOUcJG7ea3BKGLLtRoQKiKYsTy6wu';
+  const binId = process.env.JSONBIN_BIN_ID || '6a9a5023f5f4af5e29687395';
+  if (binKey && binId) {
     const options = {
       hostname: 'api.jsonbin.io',
-      path: `/v3/b/${process.env.JSONBIN_BIN_ID}`,
+      path: `/v3/b/${binId}`,
       method: 'PUT',
       headers: {
-        'X-Master-Key': process.env.JSONBIN_KEY,
+        'X-Master-Key': binKey,
         'Content-Type': 'application/json'
       }
     };
