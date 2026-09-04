@@ -32,8 +32,8 @@ const MIME_TYPES = {
 
 // Database helper functions
 function readDb(callback) {
-  const binKey = process.env.JSONBIN_KEY || '$2a$10$rkUPFSk/HIXyM3ifAXj2vuRSJOUcJG7ea3BKGLLtRoQKiKYsTy6wu';
-  const binId = process.env.JSONBIN_BIN_ID || '6a9a5023f5f4af5e29687395';
+  const binKey = '$2a$10$rkUPFSk/HIXyM3ifAXj2vuRSJOUcJG7ea3BKGLLtRoQKiKYsTy6wu';
+  const binId = '6a9a5023f5f4af5e29687395';
   if (binKey && binId) {
     const options = {
       hostname: 'api.jsonbin.io',
@@ -79,8 +79,8 @@ function readDb(callback) {
 
 function writeDb(data, callback) {
   const body = JSON.stringify(data, null, 2);
-  const binKey = process.env.JSONBIN_KEY || '$2a$10$rkUPFSk/HIXyM3ifAXj2vuRSJOUcJG7ea3BKGLLtRoQKiKYsTy6wu';
-  const binId = process.env.JSONBIN_BIN_ID || '6a9a5023f5f4af5e29687395';
+  const binKey = '$2a$10$rkUPFSk/HIXyM3ifAXj2vuRSJOUcJG7ea3BKGLLtRoQKiKYsTy6wu';
+  const binId = '6a9a5023f5f4af5e29687395';
   if (binKey && binId) {
     const options = {
       hostname: 'api.jsonbin.io',
@@ -123,11 +123,6 @@ function checkAdminAuth(req) {
   return clientPass === adminPassword;
 }
 
-// ... other code ...
-  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
-  const clientPass = req.headers['x-admin-password'];
-  return clientPass === adminPassword;
-}
 
 function getAuthUser(req) {
   const authHeader = req.headers['authorization'];
