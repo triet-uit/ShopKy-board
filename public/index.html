@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-translate="page_title">ShopKy - Premium Fashion, Tech & Flowers</title>
+  <!-- Google Fonts: Outfit and Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=1.0.2">
+</head>
+<body>
+
+  <!-- ==========================================================================
+       App Container (Header + Hero + Storefront Catalog)
+       ========================================================================== -->
+  <div class="app-container">
+    
+    <!-- HEADER -->
+    <header class="main-header">
+      <div class="header-left">
+        <div class="logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0" />
+          </svg>
+          <h1>Shop<span>Ky</span></h1>
+        </div>
+      </div>
+      
+      <div class="header-center">
+        <nav class="nav-links">
+          <a href="#" class="active" onclick="showCatalog()" data-translate="nav_shop">Shop</a>
+          <a href="#" onclick="openTrackOrderModal()" data-translate="nav_track">Track Order</a>
+        </nav>
+      </div>
+
+      <div class="header-right">
+        <!-- Language Switcher -->
+        <div class="currency-switcher">
+          <button id="btn-lang-vi" class="currency-btn active" onclick="setLanguage('vi')">VI</button>
+          <button id="btn-lang-en" class="currency-btn" onclick="setLanguage('en')">EN</button>
+        </div>
+
+        <!-- Currency Switcher -->
+        <div class="currency-switcher">
+          <button id="btn-currency-vnd" class="currency-btn active" onclick="setCurrency('VND')">VND</button>
+          <button id="btn-currency-usd" class="currency-btn" onclick="setCurrency('USD')">USD</button>
+        </div>
+
+        <!-- User Profile/Auth Area -->
+        <div id="auth-header-area" class="auth-header-area">
+          <button id="btn-auth-open" class="btn-icon" title="Account" onclick="openAuthModal()" style="border-radius: 99px; padding: 0.6rem 1rem; display: flex; gap: 0.4rem; align-items: center;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span id="header-username" class="header-username" style="display:none; font-size: 0.82rem; font-weight: 700;"></span>
+          </button>
+        </div>
+
+        <!-- Theme Toggle -->
+        <button id="btn-theme-toggle" class="btn-icon" title="Toggle Theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+
+        <!-- Cart Button -->
+        <button id="btn-cart-toggle" class="btn-cart" onclick="toggleCart(true)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+          </svg>
+          <span id="cart-badge" class="cart-badge">0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <h2 data-translate="hero_title">Modern Curated Shopping</h2>
+        <p data-translate="hero_subtitle">Explore premium fashion wear, state-of-the-art tech gadgets, and fresh sunset flowers.</p>
+        
+        <!-- Search Bar -->
+        <div class="search-container">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="search-input" placeholder="Search catalog for jackets, headphones, roses..." oninput="handleSearch()" data-translate-placeholder="search_placeholder">
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN SHOP BOARD -->
+    <main class="shop-main">
+      <!-- Catalog Filters -->
+      <div class="catalog-filters" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+        <div class="filter-tabs" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button class="filter-tab active" data-category="All" onclick="filterCategory('All')" data-translate="cat_all">All Products</button>
+          <button class="filter-tab" data-category="Fashion" onclick="filterCategory('Fashion')" data-translate="cat_fashion">Fashion</button>
+          <button class="filter-tab" data-category="Tech" onclick="filterCategory('Tech')" data-translate="cat_tech">Technology</button>
+          <button class="filter-tab" data-category="Flowers" onclick="filterCategory('Flowers')" data-translate="cat_flowers">Flowers</button>
+        </div>
+        <div class="sort-container">
+          <select id="sort-selector" onchange="handleSortChange()" style="padding: 0.5rem 1rem; border-radius: 20px; border: 1px solid var(--border-glass); background: var(--bg-glass); color: var(--text-primary); font-family: var(--font-family-body); font-size: 0.85rem; font-weight: 500; cursor: pointer; outline: none; transition: border-color 0.2s;">
+            <option value="default" data-translate="sort_default">Sắp xếp: Mặc định</option>
+            <option value="price-asc" data-translate="sort_price_asc">Giá: Thấp đến Cao</option>
+            <option value="price-desc" data-translate="sort_price_desc">Giá: Cao đến Thấp</option>
+            <option value="rating-desc" data-translate="sort_rating_desc">Đánh giá: Cao đến Thấp</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div id="products-grid" class="products-grid">
+        <!-- Dynamic content via JS -->
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="shop-footer">
+      <p data-translate="footer_text">&copy; 2026 ShopKy. Made with premium glassmorphic aesthetics. All rights reserved.</p>
+    </footer>
+
+  </div>
+
+  <!-- ==========================================================================
+       SIDE CART DRAWER
+       ========================================================================== -->
+  <div id="cart-drawer" class="cart-drawer">
+    <div class="cart-drawer-header">
+      <h3 data-translate="cart_title">Shopping Cart</h3>
+      <button class="btn-close" onclick="toggleCart(false)" title="Close Cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Cart Items list -->
+    <div id="cart-items-container" class="cart-items-container">
+      <!-- Dynamic list -->
+    </div>
+
+    <!-- Cart Footer Summary -->
+    <div class="cart-drawer-footer">
+      <div class="summary-row" style="display: flex; justify-content: space-between;">
+        <span data-translate="cart_subtotal">Subtotal</span>
+        <span id="cart-subtotal" class="subtotal-val">$0.00</span>
+      </div>
+      <div class="summary-row" id="cart-shipping-row" style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem; display: flex; justify-content: space-between;">
+        <span data-translate="cart_shipping">Phí vận chuyển</span>
+        <span id="cart-shipping-val">$0.00</span>
+      </div>
+      <div class="summary-row" id="cart-total-row" style="font-weight: 700; margin-top: 0.5rem; border-top: 1px dashed var(--border-glass); padding-top: 0.5rem; display: flex; justify-content: space-between;">
+        <span data-translate="cart_total">Tổng cộng</span>
+        <span id="cart-total-val">$0.00</span>
+      </div>
+      <button id="btn-checkout-proceed" class="btn-checkout" onclick="openCheckoutModal()" style="margin-top: 0.75rem;" data-translate="cart_checkout">Proceed to Checkout</button>
+    </div>
+  </div>
+  <div id="cart-drawer-overlay" class="drawer-overlay" onclick="toggleCart(false)"></div>
+
+  <!-- ==========================================================================
+       MODAL: PRODUCT DETAILS VIEW
+       ========================================================================== -->
+  <div id="modal-product-details" class="modal-overlay">
+    <div class="modal-container detail-modal">
+      <button class="btn-modal-close" onclick="closeModal('modal-product-details')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div class="modal-body detail-body-grid">
+        <div class="detail-image-box">
+          <img id="detail-product-img" src="" alt="Product Image">
+        </div>
+        <div class="detail-info-box">
+          <span id="detail-product-category" class="category-pill">Category</span>
+          <h2 id="detail-product-name">Product Name</h2>
+          <div class="rating-row">
+            <svg class="star-icon" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            <span id="detail-product-rating">4.8</span>
+          </div>
+          <p id="detail-product-desc" class="product-description">Description text...</p>
+          <div class="price-stock-row">
+            <div class="price-box">
+              <span class="price-label" data-translate="detail_price_label">Price</span>
+              <h3 id="detail-product-price">$0.00</h3>
+            </div>
+            <div class="stock-box">
+              <span class="stock-label" data-translate="detail_stock_label">Availability</span>
+              <span id="detail-product-stock" class="stock-badge">In Stock</span>
+            </div>
+          </div>
+          <div class="action-row">
+            <div class="qty-selector">
+              <button onclick="changeDetailQty(-1)">-</button>
+              <input type="number" id="detail-qty-input" value="1" min="1">
+              <button onclick="changeDetailQty(1)">+</button>
+            </div>
+            <button id="btn-detail-add-to-cart" class="btn-primary flex-grow" data-translate="detail_add_to_cart">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: CHECKOUT
+       ========================================================================== -->
+  <div id="modal-checkout" class="modal-overlay">
+    <div class="modal-container checkout-modal">
+      <div class="modal-header">
+        <h2 data-translate="checkout_title">Checkout Details</h2>
+        <button class="btn-modal-close" onclick="closeModal('modal-checkout')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body checkout-body-grid">
+        <form id="checkout-form" onsubmit="handleCheckout(event)">
+          <div class="form-group">
+            <label for="checkout-name" data-translate="checkout_name">Full Name</label>
+            <input type="text" id="checkout-name" required placeholder="John Doe" data-translate-placeholder="checkout_name_placeholder">
+          </div>
+          <div class="form-group">
+            <label for="checkout-phone" data-translate="checkout_phone">Phone Number</label>
+            <input type="text" id="checkout-phone" required placeholder="0987654321" data-translate-placeholder="checkout_phone_placeholder">
+          </div>
+          <div class="form-group">
+            <label for="checkout-email" data-translate="checkout_email">Email Address</label>
+            <input type="email" id="checkout-email" placeholder="john@example.com" data-translate-placeholder="checkout_email_placeholder">
+          </div>
+          <div class="form-group">
+            <label for="checkout-address" data-translate="checkout_address">Shipping Address</label>
+            <input type="text" id="checkout-address" required placeholder="123 Street Name, Ward, District, City" data-translate-placeholder="checkout_address_placeholder">
+          </div>
+          <div class="form-group">
+            <label for="checkout-payment" data-translate="checkout_payment">Payment Method</label>
+            <select id="checkout-payment">
+              <option value="COD" data-translate="pay_cod">Cash on Delivery (COD)</option>
+              <option value="Bank Transfer" data-translate="pay_bank">Bank Transfer (VietQR)</option>
+              <option value="MoMo" data-translate="pay_momo">Ví MoMo</option>
+            </select>
+          </div>
+          <div class="form-group coupon-group">
+            <label for="checkout-coupon-input" data-translate="checkout_coupon_label">Mã Giảm Giá</label>
+            <div style="display: flex; gap: 0.5rem;">
+              <input type="text" id="checkout-coupon-input" placeholder="Nhập mã (ví dụ: SHOPKY10)" data-translate-placeholder="coupon_placeholder" style="flex-grow: 1;">
+              <button type="button" id="btn-apply-coupon" class="btn-primary" onclick="applyCoupon()" style="padding: 0 1rem; white-space: nowrap;" data-translate="btn_apply_coupon">Áp dụng</button>
+            </div>
+            <div id="coupon-message" style="font-size: 0.8rem; margin-top: 0.25rem; display: none;"></div>
+          </div>
+          <button type="submit" class="btn-primary btn-submit-checkout" data-translate="btn_place_order">Place Order</button>
+        </form>
+        
+        <div class="checkout-summary-box">
+          <h3 data-translate="summary_title">Order Summary</h3>
+          <div id="checkout-summary-list" class="checkout-summary-list">
+            <!-- Dynamic items list -->
+          </div>
+          <div class="summary-divider" style="height: 1px; background: var(--border-glass); margin: 0.75rem 0;"></div>
+          <div class="discount-row" id="checkout-discount-row" style="display: none; justify-content: space-between; font-size: 0.9rem; color: #10b981; margin-bottom: 0.5rem;">
+            <span id="label-discount-applied">Giảm giá</span>
+            <span id="checkout-discount-val">-$0.00</span>
+          </div>
+          <div class="shipping-row" id="checkout-shipping-row" style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+            <span data-translate="checkout_shipping">Phí vận chuyển</span>
+            <span id="checkout-shipping-val">$0.00</span>
+          </div>
+          <div class="checkout-total-row">
+            <span data-translate="summary_total">Total Payable</span>
+            <span id="checkout-total-val">$0.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: ORDER SUCCESS / CONFIRMATION
+       ========================================================================== -->
+  <div id="modal-order-success" class="modal-overlay">
+    <div class="modal-container success-modal">
+      <div class="modal-body success-body">
+        <div class="success-icon-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <h2 data-translate="success_title">Order Placed Successfully!</h2>
+        <p data-translate="success_subtitle">Thank you for purchasing. Your order has been registered in our system.</p>
+        
+        <div class="receipt-card">
+          <div class="receipt-row">
+            <span class="label" data-translate="success_order_id">Order ID</span>
+            <span id="receipt-order-id" class="val">ord-172324...</span>
+          </div>
+          <div class="receipt-row">
+            <span class="label" data-translate="success_total_paid">Total Paid</span>
+            <span id="receipt-total" class="val">$0.00</span>
+          </div>
+          <div class="receipt-row">
+            <span class="label" data-translate="success_payment">Payment Method</span>
+            <span id="receipt-payment" class="val">COD</span>
+          </div>
+          <div class="receipt-row">
+            <span class="label" data-translate="success_deliver_to">Deliver To</span>
+            <span id="receipt-name" class="val">John Doe</span>
+          </div>
+        </div>
+
+        <!-- QR & Payment Proof Section (Hidden for COD, shown for Bank/Momo) -->
+        <div id="qr-payment-section" class="qr-payment-section" style="display:none; margin-top: 1.5rem; border-top: 1px dashed var(--border-glass); padding-top: 1.5rem;">
+          <h3 style="font-size: 1rem; font-weight:700; margin-bottom: 0.5rem; font-family: var(--font-family-title);" data-translate="qr_title_pay">Please Scan QR to Pay</h3>
+          
+          <div class="qr-code-box" style="display:flex; justify-content:center; margin-bottom: 1rem;">
+            <img id="payment-qr-img" src="" alt="Payment QR" style="max-width: 200px; border-radius: 12px; border: 1px solid var(--border-glass);">
+          </div>
+          
+          <div class="proof-form" style="display:flex; flex-direction:column; gap:0.75rem; text-align: left;">
+            <div class="form-group">
+              <label style="font-size: 0.8rem; font-weight:600; color: var(--text-secondary);" data-translate="label_proof_text">Transaction Message / Notes</label>
+              <input type="text" id="proof-text-input" placeholder="e.g. Transaction ID, transfer note..." data-translate-placeholder="placeholder_proof_text" style="width:100%; padding:0.6rem; border-radius:8px; border:1px solid var(--border-glass); background:var(--bg-input);">
+            </div>
+            
+            <div class="form-group">
+              <label style="font-size: 0.8rem; font-weight:600; color: var(--text-secondary);" data-translate="label_proof_file">Upload Receipt Screenshot</label>
+              <input type="file" id="proof-file-input" accept="image/*" style="width:100%; font-size:0.8rem; margin-top:0.25rem;">
+            </div>
+            
+            <button id="btn-submit-proof" class="btn-primary" onclick="submitPaymentProof()" style="width: 100%; padding: 0.65rem;" data-translate="btn_confirm_paid">Submit Proof & Complete</button>
+          </div>
+        </div>
+
+        <button id="btn-success-continue" class="btn-primary" onclick="closeOrderSuccess()" data-translate="success_continue" style="margin-top: 1rem; width: 100%;">Continue Shopping</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: TRACK ORDER
+       ========================================================================== -->
+  <div id="modal-track-order" class="modal-overlay">
+    <div class="modal-container track-modal">
+      <div class="modal-header">
+        <h2 data-translate="track_title">Track Order Status</h2>
+        <button class="btn-modal-close" onclick="closeModal('modal-track-order')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="my-orders-section" style="margin-bottom: 1.25rem; display: none;">
+          <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 0.5rem; border-bottom: 1px dashed var(--border-glass); padding-bottom: 0.25rem;" data-translate="my_orders_title">Your Orders</h4>
+          <div id="my-orders-list" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 150px; overflow-y: auto; padding-right: 0.25rem;">
+            <!-- Dynamic list -->
+          </div>
+        </div>
+        <div class="form-row" style="margin-top: 1rem;">
+          <input type="text" id="track-order-id-input" placeholder="Enter Order ID (e.g. ord-172324...)" data-translate-placeholder="track_placeholder">
+          <button class="btn-primary" onclick="handleTrackOrder()" data-translate="btn_search">Search</button>
+        </div>
+        <div id="track-order-result" class="track-order-result" style="margin-top: 1rem;">
+          <!-- Dynamic Order Track Details -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       MODAL: AUTH (LOGIN / REGISTER / PROFILE)
+       ========================================================================== -->
+  <div id="modal-auth" class="modal-overlay">
+    <div class="modal-container auth-modal" style="width: 450px; max-width: 95%;">
+      <button class="btn-modal-close" onclick="closeModal('modal-auth')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div class="modal-body" style="padding: 2.25rem;">
+        
+        <!-- VIEW: LOGIN -->
+        <div id="auth-view-login" class="auth-view">
+          <h2 style="font-family: var(--font-family-title); font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem;" data-translate="login_title">Đăng Nhập</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;" data-translate="login_subtitle_shop">Đăng nhập để xem lịch sử đơn hàng và đặt hàng nhanh hơn.</p>
+          <form id="login-form" onsubmit="handleLoginSubmit(event)" style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <div class="form-group">
+              <label for="login-email" data-translate="label_login_identifier">Email hoặc Số điện thoại <span style="color: #ef4444;">*</span></label>
+              <input type="text" id="login-email" required data-translate-placeholder="placeholder_login_identifier" placeholder="Email hoặc Số điện thoại">
+              <div class="field-error-msg" style="color: #ef4444; font-size: 0.72rem; margin-top: 0.25rem; display: none;"></div>
+            </div>
+            <div class="form-group">
+              <label for="login-password" data-translate="label_password_required">Mật khẩu <span style="color: #ef4444;">*</span></label>
+              <input type="password" id="login-password" required data-translate-placeholder="placeholder_password" placeholder="Mật khẩu">
+              <div class="field-error-msg" style="color: #ef4444; font-size: 0.72rem; margin-top: 0.25rem; display: none;"></div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: -0.75rem; font-size: 0.8rem;">
+              <a href="#" onclick="switchAuthView('forgot')" style="color: var(--accent-cyan); font-weight: 500;" data-translate="link_forgot_password">Quên mật khẩu?</a>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; padding:0.8rem; border-radius:12px; font-weight:600; margin-top:0.5rem;" data-translate="btn_login_submit">Đăng Nhập</button>
+          </form>
+          <div style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem;">
+            <span data-translate="no_account_yet" style="color: var(--text-secondary);">Chưa có tài khoản?</span>
+            <a href="#" onclick="switchAuthView('register')" style="color: var(--accent-cyan); font-weight: 700; margin-left: 0.25rem;" data-translate="link_register">Đăng ký ngay</a>
+          </div>
+        </div>
+
+        <!-- VIEW: REGISTER -->
+        <div id="auth-view-register" class="auth-view" style="display:none;">
+          <h2 style="font-family: var(--font-family-title); font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem;" data-translate="register_title">Đăng Ký Tài Khoản</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;" data-translate="register_subtitle_shop">Tạo tài khoản mua sắm thông minh của bạn.</p>
+          <form id="register-form" onsubmit="handleRegisterSubmit(event)" style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <div class="form-group">
+              <label for="register-phone" data-translate="register_phone_required">Số điện thoại <span style="color: #ef4444;">*</span></label>
+              <input type="text" id="register-phone" required data-translate-placeholder="placeholder_phone" placeholder="Số điện thoại">
+              <div class="field-error-msg" style="color: #ef4444; font-size: 0.72rem; margin-top: 0.25rem; display: none;"></div>
+            </div>
+            <div class="form-group">
+              <label for="register-password" data-translate="register_password_required">Mật khẩu <span style="color: #ef4444;">*</span></label>
+              <input type="password" id="register-password" required data-translate-placeholder="placeholder_password" placeholder="Mật khẩu">
+              <div class="field-error-msg" style="color: #ef4444; font-size: 0.72rem; margin-top: 0.25rem; display: none;"></div>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; padding:0.8rem; border-radius:12px; font-weight:600; margin-top:0.5rem;" data-translate="btn_register_submit">Đăng Ký</button>
+          </form>
+          <div style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem;">
+            <span data-translate="already_have_account" style="color: var(--text-secondary);">Đã có tài khoản?</span>
+            <a href="#" onclick="switchAuthView('login')" style="color: var(--accent-cyan); font-weight: 700; margin-left: 0.25rem;" data-translate="link_login">Đăng nhập</a>
+          </div>
+        </div>
+
+        <!-- VIEW: FORGOT PASSWORD -->
+        <div id="auth-view-forgot" class="auth-view" style="display:none;">
+          <h2 style="font-family: var(--font-family-title); font-size: 1.75rem; font-weight: 800; margin-bottom: 0.5rem;" data-translate="forgot_title">Đặt Lại Mật Khẩu</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;" data-translate="forgot_subtitle">Nhập tài khoản đã đăng ký để tạo mật khẩu mới.</p>
+          <form id="forgot-form" onsubmit="handleForgotPasswordSubmit(event)" style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <div class="form-group">
+              <label for="forgot-phone" data-translate="label_login_identifier">Email hoặc Số điện thoại <span style="color: #ef4444;">*</span></label>
+              <input type="text" id="forgot-phone" required data-translate-placeholder="placeholder_login_identifier" placeholder="Email hoặc Số điện thoại">
+              <div class="field-error-msg" style="color: #ef4444; font-size: 0.72rem; margin-top: 0.25rem; display: none;"></div>
+            </div>
+            <div class="form-group">
+              <label for="forgot-password" data-translate="forgot_new_password_required">Mật khẩu mới <span style="color: #ef4444;">*</span></label>
+              <input type="password" id="forgot-password" required data-translate-placeholder="placeholder_new_password" placeholder="Mật khẩu mới">
+              <div class="field-error-msg" style="color: #ef4444; font-size: 0.72rem; margin-top: 0.25rem; display: none;"></div>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%; padding:0.8rem; border-radius:12px; font-weight:600; margin-top:0.5rem;" data-translate="btn_forgot_submit">Đặt Lại Mật Khẩu</button>
+          </form>
+          <div style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem;">
+            <span data-translate="already_have_account" style="color: var(--text-secondary);">Đã có tài khoản?</span>
+            <a href="#" onclick="switchAuthView('login')" style="color: var(--accent-cyan); font-weight: 700; margin-left: 0.25rem;" data-translate="link_login">Đăng nhập</a>
+          </div>
+        </div>
+
+        <!-- VIEW: PROFILE / LOGGED IN -->
+        <div id="auth-view-profile" class="auth-view" style="display:none;">
+          <h2 id="profile-name-title" style="font-family: var(--font-family-title); font-size: 1.5rem; font-weight: 800; margin-bottom: 0.25rem;">Tài Khoản</h2>
+          <p id="profile-email-display" style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1.5rem;"></p>
+          
+          <div class="profile-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.75rem;">
+            <button id="tab-profile-info" class="filter-tab active" onclick="switchProfileTab('info')" data-translate="tab_profile_info" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Thông tin</button>
+            <button id="tab-profile-orders" class="filter-tab" onclick="switchProfileTab('orders')" data-translate="tab_profile_orders" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Lịch sử đơn hàng</button>
+          </div>
+
+          <!-- Sub-tab: Info Edit -->
+          <div id="profile-subtab-info" class="profile-subtab" style="display: flex; flex-direction: column; gap: 1rem;">
+            <form id="profile-edit-form" onsubmit="handleProfileUpdate(event)" style="display: flex; flex-direction: column; gap: 1.25rem;">
+              <div class="form-group">
+                <label for="profile-name" data-translate="register_name_required">Họ và Tên <span style="color: #ef4444;">*</span></label>
+                <input type="text" id="profile-name" required data-translate-placeholder="placeholder_name" placeholder="Họ và Tên">
+                <div class="field-error-msg" style="color: #ef4444; font-size: 0.72rem; margin-top: 0.25rem; display: none;"></div>
+              </div>
+              <div class="form-group">
+                <label for="profile-email" data-translate="label_email_optional">Email (Không bắt buộc)</label>
+                <input type="email" id="profile-email" data-translate-placeholder="placeholder_email" placeholder="Email">
+                <div class="field-error-msg" style="color: #ef4444; font-size: 0.72rem; margin-top: 0.25rem; display: none;"></div>
+              </div>
+              <div class="form-group">
+                <label for="profile-phone" data-translate="register_phone_required">Số điện thoại <span style="color: #ef4444;">*</span></label>
+                <input type="text" id="profile-phone" required data-translate-placeholder="placeholder_phone" placeholder="Số điện thoại">
+                <div class="field-error-msg" style="color: #ef4444; font-size: 0.72rem; margin-top: 0.25rem; display: none;"></div>
+              </div>
+              <div class="form-group">
+                <label for="profile-address" data-translate="register_address_required">Địa chỉ giao hàng mặc định <span style="color: #ef4444;">*</span></label>
+                <input type="text" id="profile-address" required data-translate-placeholder="placeholder_address" placeholder="Địa chỉ giao hàng mặc định">
+                <div class="field-error-msg" style="color: #ef4444; font-size: 0.72rem; margin-top: 0.25rem; display: none;"></div>
+              </div>
+              <button type="submit" class="btn-primary" style="width:100%; padding:0.75rem; border-radius:10px; font-weight:600; margin-top:0.5rem;" data-translate="btn_update_profile">Cập Nhật Thông Tin</button>
+            </form>
+          </div>
+
+          <!-- Sub-tab: Order History -->
+          <div id="profile-subtab-orders" class="profile-subtab" style="display:none;">
+            <div id="profile-orders-list" style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 250px; overflow-y: auto; padding-right: 0.25rem;">
+              <!-- Dynamic list of logged-in user orders -->
+            </div>
+          </div>
+
+          <button onclick="handleLogout()" class="btn-checkout" style="width:100%; padding:0.75rem; border-radius:10px; font-weight:600; margin-top:1.5rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; box-shadow: none;" data-translate="btn_logout">Đăng Xuất</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic notification toast wrapper -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Javascript Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
