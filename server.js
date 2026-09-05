@@ -1219,14 +1219,7 @@ const server = http.createServer((req, res) => {
           user.phone = newPhone;
           user.address = address.trim();
 
-          // Sync session details in memory
-          for (let tok in SESSIONS) {
-            if (SESSIONS[tok].userId === user.id) {
-              SESSIONS[tok].email = user.email;
-              SESSIONS[tok].phone = user.phone;
-            }
-          }
-
+          // JWT is stateless — no session sync needed
           writeDb(db, (writeErr) => {
             if (writeErr) {
               res.writeHead(500, { 'Content-Type': 'application/json' });
