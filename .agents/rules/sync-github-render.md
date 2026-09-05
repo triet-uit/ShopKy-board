@@ -2,11 +2,16 @@
 
 ## ⚠️ ĐIỀU KIỆN TIÊN QUYẾT — BẮT BUỘC THỰC HIỆN
 
-Dự án này chạy song song trên **2 môi trường**:
-- **Local**: `http://localhost:8090/ShopKy`
-- **Production (Render)**: `https://shopky-board.onrender.com`
+Dự án này chạy song song trên **2 môi trường**, gồm **CẢ 2 TRANG** (khách hàng + quản trị):
 
-Cả 2 đều đồng bộ qua **GitHub repo**: `https://github.com/triet-uit/ShopKy-board`
+| | Local | Render (Production) |
+|---|---|---|
+| 🛍️ **Trang khách hàng** | `http://localhost:8090/ShopKy` | `https://shopky-board.onrender.com/ShopKy` |
+| 🔧 **Trang quản trị** | `http://localhost:8090/admin.html` | `https://shopky-board.onrender.com/admin.html` |
+
+Cả 2 môi trường đều đồng bộ qua **GitHub repo**: `https://github.com/triet-uit/ShopKy-board`
+
+> ⚠️ Mọi thay đổi dù ở trang khách hàng hay trang quản trị đều phải được push lên GitHub để Render đồng bộ theo.
 
 ---
 
