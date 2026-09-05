@@ -1400,38 +1400,45 @@ button, select, input, textarea {
    ========================================================================== */
 .toast-container {
   position: fixed;
-  bottom: 2rem;
-  left: 2rem;
+  top: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.5rem;
-  z-index: 300;
+  z-index: 10000;
+  pointer-events: none;
 }
 .toast {
   background-color: var(--bg-surface-opaque);
   border: 1px solid var(--border-glass);
   color: var(--text-main);
-  padding: 0.75rem 1.25rem;
-  border-radius: 8px;
-  font-size: 0.8rem;
-  box-shadow: var(--shadow-md);
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.35);
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  animation: slideInToast 0.3s cubic-bezier(0.16, 1, 0.3, 1), fadeOutToast 0.3s 2.7s forwards;
-  max-width: 300px;
+  animation: slideInToast 0.35s cubic-bezier(0.16, 1, 0.3, 1), fadeOutToast 0.35s 2.65s forwards;
+  max-width: 420px;
+  white-space: nowrap;
+  pointer-events: auto;
+  backdrop-filter: blur(12px);
 }
-.toast.success { border-left: 3px solid var(--accent-green); }
-.toast.info { border-left: 3px solid var(--accent-cyan); }
-.toast.warning { border-left: 3px solid var(--accent-yellow); }
-.toast.danger { border-left: 3px solid var(--danger-color); }
+.toast.success { border: 1.5px solid var(--accent-green); }
+.toast.info    { border: 1.5px solid var(--accent-cyan); }
+.toast.warning { border: 1.5px solid var(--accent-yellow); }
+.toast.danger  { border: 1.5px solid var(--danger-color); }
 
 @keyframes slideInToast {
-  from { transform: translateY(1rem) scale(0.9); opacity: 0; }
-  to { transform: translateY(0) scale(1); opacity: 1; }
+  from { transform: translateY(-1.5rem) scale(0.9); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
 }
 @keyframes fadeOutToast {
-  to { transform: translateY(-0.5rem); opacity: 0; pointer-events: none; }
+  to { transform: translateY(-1rem); opacity: 0; pointer-events: none; }
 }
 
 /* ==========================================================================
