@@ -47,24 +47,32 @@ a9ef34d Update server.js for JSONBin integration
 
 ### ✅ Đã làm
 - Ôn lại lịch sử làm việc hôm qua
-- Tạo file `DAILY_LOG.md` để theo dõi tiến độ hàng ngày
-- **Fix lỗi 401 Unauthorized** khi cập nhật hồ sơ → thêm `Authorization` vào CORS header trong `server.js`
-- **Fix flow đăng ký** → sau khi đăng ký thành công tự động login luôn, đóng modal, không cần nhập lại mật khẩu
-- Tạo rule `.agents/rules/sync-github-render.md` — ghi điều kiện tiên quyết đồng bộ Local ↔ GitHub ↔ Render
-- Push toàn bộ lên GitHub → Render tự động redeploy
+- Tạo file `DAILY_LOG.md` + rule `sync-github-render.md` (đồng bộ cả trang khách hàng lẫn admin)
+- **Fix lỗi 401** khi cập nhật hồ sơ → thêm `Authorization` vào CORS header
+- **Fix flow đăng ký** → tự động đăng nhập sau khi đăng ký, đóng modal luôn
+- **Di chuyển toast notification** từ góc dưới trái → **trên cùng chính giữa** (pill style, glassmorphism, slide từ trên xuống) — áp dụng cả 2 trang
+- **Fix lỗi mất session sau redeploy** → thay `SESSIONS = {}` (RAM) bằng **JWT stateless** (HMAC-SHA256, tự implement bằng `crypto` built-in, không cần thư viện ngoài)
+  - Token có hiệu lực **30 ngày**
+  - Server restart / Render redeploy → **không bị đăng xuất** nữa
 
 ### 🐛 Vấn đề gặp phải
-- Cập nhật hồ sơ bị lỗi 401 → do CORS header thiếu `Authorization`
-- Sau đăng ký phải tự đăng nhập lại thủ công → đã fix tự động login
+- 401 khi cập nhật hồ sơ → CORS thiếu `Authorization` header
+- Sau đăng ký phải tự đăng nhập lại → đã fix auto-login
+- F5 hoặc Render redeploy → mất session vì RAM → đã fix bằng JWT
 
 ### 📌 Git commits hôm nay
 ```
-9de3597 Fix CORS Authorization header + auto-login after register
+f22e573 fix: replace RAM sessions with stateless JWT
+738f108 feat: move toast notifications to top-center of page
+3ce4929 docs: clarify sync rule includes both customer and admin pages
+73b13e5 docs: add sync rule Local-GitHub-Render + update daily log
+9de3597 fix: CORS Authorization header + auto-login after register
 ```
 
 ### 🎯 Trạng thái khi dừng
-- Local và Render đã đồng bộ
+- Local và Render đã đồng bộ ✅
 - Server local đang chạy tại `localhost:8090`
+- Render đang deploy JWT fix (~3-5 phút sau commit cuối)
 
 ---
 
