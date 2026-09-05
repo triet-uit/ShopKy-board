@@ -1920,16 +1920,37 @@ async function handleLogout() {
   showToast(t('toast_logged_out'), 'info');
 }
 
-function checkAuthStatus() {
+async function checkAuthStatus() {
   const token = localStorage.getItem('aethershop_token');
   const userJson = localStorage.getItem('aethershop_user');
   const usernameSpan = document.getElementById('header-username');
 
   if (token && userJson && usernameSpan) {
     try {
-      const user = JSON.parse(userJson);
-      usernameSpan.innerText = user.name || user.phone;
+      // Hiển thị từ localStorage trước (nhanh)
+      const cachedUser = JSON.parse(userJson);
+      usernameSpan.innerText = cachedUser.name || cachedUser.phone;
       usernameSpan.style.display = 'inline-block';
+
+      // Sau đó fetch data mới nhất từ server (đồng bộ giữa local & Render)
+      try {
+        const res = await fetch('/api/user/profile', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const freshUser = await res.json();
+          // Cập nhật localStorage với data mới từ server
+          localStorage.setItem('aethershop_user', JSON.stringify(freshUser));
+          usernameSpan.innerText = freshUser.name || freshUser.phone;
+        } else if (res.status === 401) {
+          // Token hết hạn — đăng xuất
+          localStorage.removeItem('aethershop_token');
+          localStorage.removeItem('aethershop_user');
+          usernameSpan.style.display = 'none';
+        }
+      } catch (fetchErr) {
+        // Mạng lỗi — giữ data cũ từ localStorage, không cần báo lỗi
+      }
     } catch (e) {
       console.error(e);
       usernameSpan.style.display = 'none';
