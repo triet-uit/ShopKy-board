@@ -13,8 +13,30 @@ const PORT = process.env.PORT || 8090;
 const DATA_FILE = path.join(__dirname, 'data.json');
 const PUBLIC_DIR = path.join(__dirname, 'public');
 
-// In-memory Session Manager
-const SESSIONS = {}; // key: token, value: { userId, email, expiresAt }
+// JWT Secret (stateless — survives server restarts & Render redeploys)
+const JWT_SECRET = process.env.JWT_SECRET || 'shopky-super-secret-jwt-key-2024';
+
+// Tạo JWT token đơn giản dùng HMAC-SHA256 (không cần thư viện ngoài)
+function createToken(payload) {
+  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');
+  const body   = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const sig    = crypto.createHmac('sha256', JWT_SECRET).update(`${header}.${body}`).digest('base64url');
+  return `${header}.${body}.${sig}`;
+}
+
+// Xác thực JWT token
+function verifyToken(token) {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const [header, body, sig] = parts;
+    const expectedSig = crypto.createHmac('sha256', JWT_SECRET).update(`${header}.${body}`).digest('base64url');
+    if (sig !== expectedSig) return null;
+    const payload = JSON.parse(Buffer.from(body, 'base64url').toString());
+    if (Date.now() > payload.expiresAt) return null;
+    return payload;
+  } catch { return null; }
+}
 
 // MIME types mapping
 const MIME_TYPES = {
@@ -128,13 +150,7 @@ function getAuthUser(req) {
   const authHeader = req.headers['authorization'];
   if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
   const token = authHeader.substring(7);
-  const session = SESSIONS[token];
-  if (!session) return null;
-  if (Date.now() > session.expiresAt) {
-    delete SESSIONS[token];
-    return null;
-  }
-  return session;
+  return verifyToken(token); // stateless JWT verify
 }
 
 function sendTelegramNotification(settings, order) {
@@ -1027,14 +1043,13 @@ const server = http.createServer((req, res) => {
             return;
           }
 
-          // Generate Token
-          const token = crypto.randomBytes(32).toString('hex');
-          SESSIONS[token] = {
+          // Generate JWT token (stateless — sống sót qua server restart)
+          const token = createToken({
             userId: user.id,
             email: user.email || '',
             phone: user.phone,
-            expiresAt: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
-          };
+            expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000 // 30 ngày
+          });
 
           const publicUser = { ...user };
           delete publicUser.password;
@@ -1052,11 +1067,7 @@ const server = http.createServer((req, res) => {
 
   // 5.82. POST /api/logout (User Logout)
   if (req.method === 'POST' && pathname === '/api/logout') {
-    const authHeader = req.headers['authorization'];
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
-      delete SESSIONS[token];
-    }
+    // JWT là stateless — chỉ cần client xóa token khỏi localStorage
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ success: true }));
     return;
