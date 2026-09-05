@@ -48,13 +48,23 @@ a9ef34d Update server.js for JSONBin integration
 ### ✅ Đã làm
 - Ôn lại lịch sử làm việc hôm qua
 - Tạo file `DAILY_LOG.md` để theo dõi tiến độ hàng ngày
+- **Fix lỗi 401 Unauthorized** khi cập nhật hồ sơ → thêm `Authorization` vào CORS header trong `server.js`
+- **Fix flow đăng ký** → sau khi đăng ký thành công tự động login luôn, đóng modal, không cần nhập lại mật khẩu
+- Tạo rule `.agents/rules/sync-github-render.md` — ghi điều kiện tiên quyết đồng bộ Local ↔ GitHub ↔ Render
+- Push toàn bộ lên GitHub → Render tự động redeploy
 
-### 🎯 Trạng thái hiện tại
-- Đang mở: `admin.html`, `server.js`, `style.css`, `admin.js`
-- Server deploy: https://shopky-board.onrender.com
+### 🐛 Vấn đề gặp phải
+- Cập nhật hồ sơ bị lỗi 401 → do CORS header thiếu `Authorization`
+- Sau đăng ký phải tự đăng nhập lại thủ công → đã fix tự động login
 
-### 📝 Còn cần làm / TODO
-- [ ] ..._(sẽ cập nhật trong ngày)_
+### 📌 Git commits hôm nay
+```
+9de3597 Fix CORS Authorization header + auto-login after register
+```
+
+### 🎯 Trạng thái khi dừng
+- Local và Render đã đồng bộ
+- Server local đang chạy tại `localhost:8090`
 
 ---
 
