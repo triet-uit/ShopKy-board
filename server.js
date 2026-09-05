@@ -71,17 +71,26 @@ function readDb(callback) {
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
         if (res.statusCode !== 200) {
+          console.error(`[readDb] JSONBin error ${res.statusCode}: ${data}`);
           callback(new Error(`JSONBin error status ${res.statusCode}: ${data}`), null);
         } else {
           try {
             callback(null, JSON.parse(data));
           } catch (parseErr) {
+            console.error('[readDb] JSON parse error:', parseErr.message);
             callback(parseErr, null);
           }
         }
       });
     });
-    req.on('error', err => callback(err, null));
+    req.setTimeout(8000, () => {
+      console.error('[readDb] JSONBin request timed out');
+      req.destroy(new Error('JSONBin read timeout'));
+    });
+    req.on('error', err => {
+      console.error('[readDb] request error:', err.message);
+      callback(err, null);
+    });
     req.end();
   } else {
     fs.readFile(DATA_FILE, 'utf8', (err, data) => {
@@ -575,6 +584,20 @@ const server = http.createServer((req, res) => {
         delete publicSettings.telegramChatId;
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(publicSettings));
+      }
+    });
+    return;
+  }
+
+  // Debug: GET /api/debug-jsonbin — test JSONBin connectivity from Render
+  if (req.method === 'GET' && pathname === '/api/debug-jsonbin') {
+    readDb((err, db) => {
+      if (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: false, error: err.message }));
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ ok: true, usersCount: (db.users || []).length, productsCount: (db.products || []).length }));
       }
     });
     return;
@@ -1157,8 +1180,9 @@ const server = http.createServer((req, res) => {
 
         readDb((err, db) => {
           if (err) {
+            console.error('[profile update] readDb failed:', err.message);
             res.writeHead(500, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'Database read failed' }));
+            res.end(JSON.stringify({ error: `Database read failed: ${err.message}` }));
             return;
           }
           const user = db.users.find(u => u.id === session.userId);
