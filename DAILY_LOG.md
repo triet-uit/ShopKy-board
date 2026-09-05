@@ -62,17 +62,20 @@ a9ef34d Update server.js for JSONBin integration
 
 ### 📌 Git commits hôm nay
 ```
+e7de7fd fix: remove leftover SESSIONS reference in profile update route
+f2ecfee fix: add JSONBin timeout+logging + debug endpoint
 f22e573 fix: replace RAM sessions with stateless JWT
 738f108 feat: move toast notifications to top-center of page
 3ce4929 docs: clarify sync rule includes both customer and admin pages
-73b13e5 docs: add sync rule Local-GitHub-Render + update daily log
 9de3597 fix: CORS Authorization header + auto-login after register
 ```
 
 ### 🎯 Trạng thái khi dừng
-- Local và Render đã đồng bộ ✅
-- Server local đang chạy tại `localhost:8090`
-- Render đang deploy JWT fix (~3-5 phút sau commit cuối)
+- ✅ Local và Render đồng bộ, cùng chạy code mới nhất
+- ✅ JWT hoạt động — không bị đăng xuất sau mỗi deploy
+- ✅ Cập nhật hồ sơ hoạt động trên cả local lẫn Render
+- ✅ Toast notification hiển thị top-center cả 2 trang
+- ✅ Đăng ký tự động đăng nhập luôn
 
 ---
 
