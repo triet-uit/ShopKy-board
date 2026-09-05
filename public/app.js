@@ -122,7 +122,7 @@ const TRANSLATIONS = {
     btn_logout: "Đăng Xuất",
     toast_login_success: "Đăng nhập thành công! Chào mừng {name} 🎉",
     toast_login_fail: "Đăng nhập thất bại. Vui lòng kiểm tra lại email/mật khẩu.",
-    toast_register_success: "Đăng ký tài khoản thành công! Bạn có thể đăng nhập ngay. 🎉",
+    toast_register_success: "Đăng ký và đăng nhập thành công! Chào mừng bạn đến với ShopKy 🎉",
     toast_register_fail: "Đăng ký thất bại. Số điện thoại có thể đã được sử dụng.",
     toast_profile_updated: "Cập nhật hồ sơ thành công! 🌟",
     toast_profile_update_fail: "Cập nhật hồ sơ thất bại.",
@@ -264,7 +264,7 @@ const TRANSLATIONS = {
     btn_logout: "Log Out",
     toast_login_success: "Login successful! Welcome {name} 🎉",
     toast_login_fail: "Login failed. Please check your credentials.",
-    toast_register_success: "Registration successful! You can now log in. 🎉",
+    toast_register_success: "Registration & login successful! Welcome to ShopKy 🎉",
     toast_register_fail: "Registration failed. Phone number might already be taken.",
     toast_profile_updated: "Profile updated successfully! 🌟",
     toast_profile_update_fail: "Failed to update profile.",
@@ -1747,11 +1747,23 @@ async function handleRegisterSubmit(event) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Registration failed');
 
-    showToast(t('toast_register_success'), 'success');
-    
+    // Tự động đăng nhập sau khi đăng ký thành công
+    const loginRes = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: phone, password })
+    });
+
+    const loginData = await loginRes.json();
+    if (!loginRes.ok) throw new Error(loginData.error || 'Auto-login failed');
+
+    localStorage.setItem('aethershop_token', loginData.token);
+    localStorage.setItem('aethershop_user', JSON.stringify(loginData.user));
+
+    checkAuthStatus();
+    closeModal('modal-auth');
     document.getElementById('register-form').reset();
-    switchAuthView('login');
-    document.getElementById('login-email').value = phone;
+    showToast(t('toast_register_success'), 'success');
   } catch (err) {
     console.error(err);
     showFieldError(phoneInput, err.message || t('toast_register_fail'));
