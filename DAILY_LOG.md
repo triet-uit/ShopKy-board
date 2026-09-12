@@ -98,19 +98,27 @@ f22e573 fix: replace RAM sessions with stateless JWT
   - Tự động đồng bộ lại `localStorage` sau khi fetch server → `checkOrderStatusNotifications` vẫn hoạt động
   - Thêm loading spinner khi đang tải
 
+- **Thêm tính năng Xóa đơn hàng cho Admin**:
+  - Bổ sung API `DELETE /api/orders/:id` trên server.
+  - Thêm nút "Xóa đơn hàng" màu đỏ dưới ô chọn trạng thái trong danh sách đơn hàng trang quản trị.
+  - Hiện popup xác nhận trước khi xóa vĩnh viễn và tự động cập nhật lại thống kê doanh thu/đơn hàng sau khi xóa.
+
 ### 📌 Git commits hôm nay
 ```
+312b9ad feat: add delete order functionality for admin to remove test orders
+700df23 docs: update daily log - add server sync fix
 789d276 feat: sync track order from server API instead of localStorage (cross-device support)
 1499ffb feat: show all orders directly in track order modal, remove manual order ID input
 ```
 
 ### 🎯 Trạng thái khi dừng
+- ✅ Tab theo dõi đơn hàng hiển thị toàn bộ, không cần nhập mã
 - ✅ Đặt hàng trên Render → thấy được trên local (và ngược lại) vì đọc từ server
 - ✅ Fallback localStorage cho user chưa đăng nhập
+- ✅ Đã có tính năng Xóa đơn hàng cho Admin để dọn dẹp đơn rác/test.
 - ✅ Code đã push lên GitHub, Render đang redeploy
-- **Dừng lúc:** ~09:39
+- **Dừng lúc:** ~10:16
 
 ---
 
 _📌 Ghi chú: File này được cập nhật tự động sau mỗi phiên làm việc._
-
