@@ -77,6 +77,31 @@ f22e573 fix: replace RAM sessions with stateless JWT
 - ✅ Toast notification top-center cả 2 trang
 - ✅ Đăng ký tự động đăng nhập luôn
 
+## 📆 2026-09-12 (Thứ Bảy)
+
+### ✅ Đã làm
+- Ôn lại lịch sử làm việc các phiên trước (DAILY_LOG.md)
+- **Fix tab "Theo dõi đơn hàng"** trên trang khách hàng:
+  - Bỏ ô nhập mã đơn hàng + nút Tìm kiếm (không còn yêu cầu nhập thủ công)
+  - Mở modal → **hiển thị ngay toàn bộ đơn hàng** của user (từ localStorage)
+  - Mỗi đơn hiển thị: mã đơn, ngày đặt, tổng tiền, badge trạng thái
+  - Click vào đơn → hiển thị chi tiết đầy đủ bên dưới
+  - Nếu chưa có đơn nào → hiển thị thông báo trống có icon
+  - Modal có scroll nếu danh sách dài (max-height 85vh)
+
+### 🐛 Vấn đề gặp phải
+- Không có lỗi đáng kể
+
+### 📌 Git commits hôm nay
+```
+1499ffb feat: show all orders directly in track order modal, remove manual order ID input
+```
+
+### 🎯 Trạng thái khi dừng
+- ✅ Tab theo dõi đơn hàng hiển thị toàn bộ, không cần nhập mã
+- ✅ Code đã push lên GitHub, Render đang redeploy
+- **Dừng lúc:** ~09:32
+
 ---
 
 _📌 Ghi chú: File này được cập nhật tự động sau mỗi phiên làm việc._
