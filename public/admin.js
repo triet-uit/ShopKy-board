@@ -658,12 +658,15 @@ async function loadOrders() {
           ${proofHtml}
         </td>
         <td>
-          <select class="status-select ${order.status.toLowerCase()}" onchange="updateOrderStatus('${order.id}', this.value)">
+          <select class="status-select ${order.status.toLowerCase()}" onchange="updateOrderStatus('${order.id}', this.value)" style="margin-bottom: 0.5rem; display: block; width: 100%;">
             <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>${t('status_pending')}</option>
             <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>${t('status_processing')}</option>
             <option value="Completed" ${order.status === 'Completed' ? 'selected' : ''}>${t('status_completed')}</option>
             <option value="Cancelled" ${order.status === 'Cancelled' ? 'selected' : ''}>${t('status_cancelled')}</option>
           </select>
+          <button onclick="deleteOrder('${order.id}')" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 0.3rem 0.5rem; font-size: 0.75rem; cursor: pointer; width: 100%; transition: all 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.25)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.15)'">
+            ${activeLang === 'vi' ? 'Xóa đơn hàng' : 'Delete Order'}
+          </button>
         </td>
         <td style="color:var(--text-muted); font-size:0.75rem;">${dateStr}</td>
       `;
@@ -1092,6 +1095,29 @@ async function toggleCouponStatus(code, newStatus) {
     await loadCoupons();
   } catch (err) {
     showToast(t('toast_coupon_update_fail'), 'danger');
+  }
+}
+
+async function deleteOrder(orderId) {
+  const confirmMsg = activeLang === 'vi' ? `Bạn có chắc chắn muốn XÓA VĨNH VIỄN đơn hàng ${orderId} không?` : `Are you sure you want to PERMANENTLY DELETE order ${orderId}?`;
+  if (!confirm(confirmMsg)) return;
+
+  try {
+    const res = await fetch(`/api/orders/${orderId}`, {
+      method: 'DELETE',
+      headers: {
+        'x-admin-password': sessionStorage.getItem('admin_password') || ''
+      }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to delete order');
+    
+    showToast(activeLang === 'vi' ? 'Đã xóa đơn hàng thành công' : 'Order deleted successfully', 'success');
+    renderOrders();
+    loadDashboardStats(); // Refresh dashboard numbers
+  } catch (err) {
+    console.error(err);
+    showToast(err.message, 'danger');
   }
 }
 

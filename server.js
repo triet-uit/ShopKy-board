@@ -1315,6 +1315,50 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // 6.5. DELETE /api/orders/:id (Admin - Delete Order)
+  if (req.method === 'DELETE' && pathname.startsWith('/api/orders/')) {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+    const id = pathname.split('/')[3];
+    if (!id) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Order ID is required' }));
+      return;
+    }
+
+    readDb((err, db) => {
+      if (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Database read failed' }));
+        return;
+      }
+      
+      const orderIndex = db.orders.findIndex(o => o.id === id);
+      if (orderIndex === -1) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Order not found' }));
+        return;
+      }
+      
+      const deletedOrder = db.orders.splice(orderIndex, 1)[0];
+      
+      writeDb(db, (writeErr) => {
+        if (writeErr) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Database write failed' }));
+        } else {
+          console.log(`[ORDER] Deleted order: ${id}`);
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ message: 'Order deleted successfully', deletedOrder }));
+        }
+      });
+    });
+    return;
+  }
+
   // 7. PUT /api/orders/:id/status (Admin - Update Order Status)
   if (req.method === 'PUT' && pathname.startsWith('/api/orders/') && pathname.endsWith('/status')) {
     if (!checkAdminAuth(req)) {
