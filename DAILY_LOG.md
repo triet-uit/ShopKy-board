@@ -92,16 +92,25 @@ f22e573 fix: replace RAM sessions with stateless JWT
 ### 🐛 Vấn đề gặp phải
 - Không có lỗi đáng kể
 
+- **Fix đồng bộ đơn hàng cross-device** (đặt trên Render → thấy được trên local và ngược lại):
+  - Chuyển `renderMyOrdersList` thành `async`, fetch từ `GET /api/user/orders` khi đã đăng nhập
+  - Fallback về `localStorage` nếu chưa đăng nhập hoặc lỗi mạng
+  - Tự động đồng bộ lại `localStorage` sau khi fetch server → `checkOrderStatusNotifications` vẫn hoạt động
+  - Thêm loading spinner khi đang tải
+
 ### 📌 Git commits hôm nay
 ```
+789d276 feat: sync track order from server API instead of localStorage (cross-device support)
 1499ffb feat: show all orders directly in track order modal, remove manual order ID input
 ```
 
 ### 🎯 Trạng thái khi dừng
-- ✅ Tab theo dõi đơn hàng hiển thị toàn bộ, không cần nhập mã
+- ✅ Đặt hàng trên Render → thấy được trên local (và ngược lại) vì đọc từ server
+- ✅ Fallback localStorage cho user chưa đăng nhập
 - ✅ Code đã push lên GitHub, Render đang redeploy
-- **Dừng lúc:** ~09:32
+- **Dừng lúc:** ~09:39
 
 ---
 
 _📌 Ghi chú: File này được cập nhật tự động sau mỗi phiên làm việc._
+
