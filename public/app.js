@@ -1424,13 +1424,25 @@ function renderMyOrdersList() {
   if (!section || !list) return;
 
   const myOrders = JSON.parse(localStorage.getItem('shopky_my_orders')) || [];
-  if (myOrders.length === 0) {
-    section.style.display = 'none';
-    return;
-  }
 
+  // Luôn hiển thị section
   section.style.display = 'block';
   list.innerHTML = '';
+
+  if (myOrders.length === 0) {
+    list.innerHTML = `
+      <div style="text-align:center; padding: 2rem 1rem; color: var(--text-muted);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:48px; height:48px; margin: 0 auto 0.75rem; display:block; opacity:0.4;">
+          <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+          <rect x="9" y="3" width="6" height="4" rx="1"/>
+          <line x1="9" y1="12" x2="15" y2="12"/>
+          <line x1="9" y1="16" x2="13" y2="16"/>
+        </svg>
+        <p style="font-size:0.85rem;">${activeLang === 'vi' ? 'Bạn chưa có đơn hàng nào.' : 'You have no orders yet.'}</p>
+      </div>
+    `;
+    return;
+  }
 
   myOrders.forEach(order => {
     const dateStr = new Date(order.createdAt).toLocaleDateString(activeLang === 'vi' ? 'vi-VN' : 'en-US');
@@ -1456,7 +1468,7 @@ function renderMyOrdersList() {
     item.innerHTML = `
       <div>
         <span class="font-bold" style="font-size:0.82rem; color:var(--accent-cyan);">${order.id}</span>
-        <div style="font-size:0.7rem; color:var(--text-muted); margin-top: 0.15rem;">${dateStr} - ${totalStr}</div>
+        <div style="font-size:0.7rem; color:var(--text-muted); margin-top: 0.15rem;">${dateStr} • ${totalStr}</div>
       </div>
       <span class="status-tag ${order.status.toLowerCase()}" style="font-size:0.68rem; padding: 0.15rem 0.4rem; border-radius: 4px;">${statusText}</span>
     `;

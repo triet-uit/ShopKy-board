@@ -1118,26 +1118,18 @@ button, select, input, textarea {
    ========================================================================== */
 .track-modal {
   width: 500px;
-}
-.track-modal .form-row {
+  max-height: 85vh;
   display: flex;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  flex-direction: column;
 }
-.track-modal .form-row input {
-  flex-grow: 1;
-  background-color: var(--bg-input);
-  border: 1px solid var(--border-glass);
-  border-radius: 8px;
-  padding: 0.7rem;
-  outline: none;
-}
-.track-modal .form-row input:focus {
-  border-color: var(--accent-purple);
+.track-modal .modal-body {
+  overflow-y: auto;
+  flex: 1;
 }
 .track-order-result {
   margin-top: 1rem;
 }
+
 .track-receipt {
   background-color: var(--bg-input);
   border: 1px solid var(--border-glass);
