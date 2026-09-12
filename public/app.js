@@ -1418,15 +1418,57 @@ function updateMyOrderStatusInHistory(orderId, status) {
   }
 }
 
-function renderMyOrdersList() {
+async function renderMyOrdersList() {
   const section = document.getElementById('my-orders-section');
   const list = document.getElementById('my-orders-list');
   if (!section || !list) return;
 
-  const myOrders = JSON.parse(localStorage.getItem('shopky_my_orders')) || [];
-
   // Luôn hiển thị section
   section.style.display = 'block';
+
+  // Hiển thị loading spinner
+  list.innerHTML = `
+    <div style="text-align:center; padding: 1.5rem; color: var(--text-muted); font-size:0.82rem;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           style="width:24px; height:24px; margin: 0 auto 0.5rem; display:block; animation: spin 1s linear infinite;">
+        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+      </svg>
+      ${activeLang === 'vi' ? 'Đang tải đơn hàng...' : 'Loading orders...'}
+    </div>
+  `;
+
+  let myOrders = [];
+
+  // Nếu đã đăng nhập → fetch từ server (đồng bộ cross-device)
+  const token = localStorage.getItem('aethershop_token');
+  if (token) {
+    try {
+      const res = await fetch('/api/user/orders', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const serverOrders = await res.json();
+        // Sắp xếp mới nhất lên đầu
+        myOrders = serverOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        // Đồng bộ lại localStorage để checkOrderStatusNotifications hoạt động
+        const summaries = myOrders.map(o => {
+          const payable = (o.payableAmount !== undefined ? o.payableAmount : o.subtotal) + (o.shippingFee || 0);
+          return { id: o.id, subtotal: payable, currency: o.currency, status: o.status, createdAt: o.createdAt };
+        });
+        localStorage.setItem('shopky_my_orders', JSON.stringify(summaries));
+      } else {
+        // Token hết hạn hoặc lỗi → fallback localStorage
+        myOrders = JSON.parse(localStorage.getItem('shopky_my_orders')) || [];
+      }
+    } catch (e) {
+      // Lỗi mạng → fallback localStorage
+      myOrders = JSON.parse(localStorage.getItem('shopky_my_orders')) || [];
+    }
+  } else {
+    // Chưa đăng nhập → dùng localStorage
+    myOrders = JSON.parse(localStorage.getItem('shopky_my_orders')) || [];
+  }
+
   list.innerHTML = '';
 
   if (myOrders.length === 0) {
@@ -1446,8 +1488,10 @@ function renderMyOrdersList() {
 
   myOrders.forEach(order => {
     const dateStr = new Date(order.createdAt).toLocaleDateString(activeLang === 'vi' ? 'vi-VN' : 'en-US');
-    const totalStr = formatValue(order.subtotal, order.currency);
-    
+    const payable = order.payableAmount !== undefined ? order.payableAmount : order.subtotal;
+    const totalDisplay = payable + (order.shippingFee || 0);
+    const totalStr = formatValue(totalDisplay, order.currency);
+
     let statusText = order.status;
     if (activeLang === 'vi') {
       if (order.status === 'Pending') statusText = 'Đang chờ';
@@ -1475,6 +1519,7 @@ function renderMyOrdersList() {
     list.appendChild(item);
   });
 }
+
 
 async function checkOrderStatusNotifications() {
   let myOrders = JSON.parse(localStorage.getItem('shopky_my_orders')) || [];
