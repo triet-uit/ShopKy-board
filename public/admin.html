@@ -430,7 +430,7 @@
           <div class="form-row">
             <div class="form-group">
               <label for="product-price-vnd" data-translate="modal_price_vnd">Price in VND (đ)</label>
-              <input type="number" id="product-price-vnd" required min="0" placeholder="e.g. 550000">
+              <input type="number" id="product-price-vnd" required min="0" placeholder="e.g. 550000" oninput="autoCalculateUsd()">
             </div>
             <div class="form-group">
               <label for="product-price-usd" data-translate="modal_price_usd">Price in USD ($)</label>

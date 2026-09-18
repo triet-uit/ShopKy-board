@@ -1394,3 +1394,34 @@ async function deleteUser(userId, userName) {
   }
 }
 
+// ==========================================
+// Exchange Rate Calculation
+// ==========================================
+let currentExchangeRate = 25000;
+
+async function fetchExchangeRate() {
+  try {
+    const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+    const data = await res.json();
+    if (data && data.rates && data.rates.VND) {
+      currentExchangeRate = data.rates.VND;
+    }
+  } catch (err) {
+    console.warn('Failed to fetch exchange rate, using default 25000', err);
+  }
+}
+// Fetch once on admin load
+fetchExchangeRate();
+
+function autoCalculateUsd() {
+  const vndInput = document.getElementById('product-price-vnd');
+  const usdInput = document.getElementById('product-price-usd');
+  if (!vndInput || !usdInput) return;
+  const vnd = parseFloat(vndInput.value) || 0;
+  if (vnd === 0) {
+    usdInput.value = '';
+    return;
+  }
+  const usd = vnd / currentExchangeRate;
+  usdInput.value = parseFloat(usd.toFixed(2));
+}
