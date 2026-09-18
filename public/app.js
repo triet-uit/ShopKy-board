@@ -1191,7 +1191,7 @@ async function handleTrackOrder() {
     resultDiv.style.display = 'block';
 
     resultDiv.innerHTML = `
-      <button onclick="hideTrackOrderDetails()" class="btn-primary" style="margin-bottom: 1rem; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; background: var(--bg-glass); border: 1px solid var(--border-glass); color: var(--text-primary); box-shadow: none;">
+      <button onclick="hideTrackOrderDetails()" style="margin-bottom: 1rem; padding: 0.4rem 0.8rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); cursor: pointer; transition: all 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'; this.style.background='rgba(255,255,255,0.1)';" onmouseout="this.style.color='var(--text-secondary)'; this.style.background='rgba(255,255,255,0.05)';">
         <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
         ${activeLang === 'vi' ? 'Quay lại danh sách' : 'Back to Orders'}
       </button>
