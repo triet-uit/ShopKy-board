@@ -1425,3 +1425,18 @@ function autoCalculateUsd() {
   const usd = vnd / currentExchangeRate;
   usdInput.value = parseFloat(usd.toFixed(2));
 }
+
+function autoCalculateVnd() {
+  const vndInput = document.getElementById('product-price-vnd');
+  const usdInput = document.getElementById('product-price-usd');
+  if (!vndInput || !usdInput) return;
+  const usd = parseFloat(usdInput.value) || 0;
+  if (usd === 0) {
+    vndInput.value = '';
+    return;
+  }
+  const vnd = usd * currentExchangeRate;
+  // Làm tròn tiền Việt (vd: 552000 thay vì 552123.5)
+  // Thường có thể làm tròn theo hàng ngàn cho đẹp, nhưng làm tròn đến số nguyên là đủ
+  vndInput.value = Math.round(vnd);
+}
