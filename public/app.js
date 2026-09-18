@@ -1140,6 +1140,10 @@ function showTrackOrderView() {
   }
   if (document.getElementById('track-order-result')) {
     document.getElementById('track-order-result').innerHTML = '';
+    document.getElementById('track-order-result').style.display = 'none';
+  }
+  if (document.getElementById('my-orders-section')) {
+    document.getElementById('my-orders-section').style.display = 'block';
   }
   renderMyOrdersList();
 }
@@ -1181,7 +1185,16 @@ async function handleTrackOrder() {
     if (matched.paymentMethod === 'COD') displayedPayment = t('pay_cod');
     if (matched.paymentMethod === 'Bank Transfer') displayedPayment = t('pay_bank');
 
+    // Hide list and show details
+    const sectionList = document.getElementById('my-orders-section');
+    if (sectionList) sectionList.style.display = 'none';
+    resultDiv.style.display = 'block';
+
     resultDiv.innerHTML = `
+      <button onclick="hideTrackOrderDetails()" class="btn-primary" style="margin-bottom: 1rem; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; background: var(--bg-glass); border: 1px solid var(--border-glass); color: var(--text-primary); box-shadow: none;">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        ${activeLang === 'vi' ? 'Quay lại danh sách' : 'Back to Orders'}
+      </button>
       <div class="track-receipt">
         <div class="track-status-header">
           <div>
@@ -1220,8 +1233,17 @@ async function handleTrackOrder() {
       </div>
     `;
   } catch (err) {
-    console.error(err);
     resultDiv.innerHTML = `<div class="error-text">${t('failed_fetch_order')}</div>`;
+  }
+}
+
+function hideTrackOrderDetails() {
+  const sectionList = document.getElementById('my-orders-section');
+  const resultDiv = document.getElementById('track-order-result');
+  if (sectionList) sectionList.style.display = 'block';
+  if (resultDiv) {
+    resultDiv.style.display = 'none';
+    resultDiv.innerHTML = '';
   }
 }
 
