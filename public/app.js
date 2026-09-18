@@ -1122,7 +1122,19 @@ function closeOrderSuccess() {
 // ==========================================
 // Track Order Functionalities
 // ==========================================
-function openTrackOrderModal() {
+function showShopView() {
+  document.getElementById('view-shop').style.display = 'block';
+  document.getElementById('view-track-order').style.display = 'none';
+  document.getElementById('nav-shop').classList.add('active');
+  document.getElementById('nav-track').classList.remove('active');
+}
+
+function showTrackOrderView() {
+  document.getElementById('view-shop').style.display = 'none';
+  document.getElementById('view-track-order').style.display = 'block';
+  document.getElementById('nav-shop').classList.remove('active');
+  document.getElementById('nav-track').classList.add('active');
+  
   if (document.getElementById('track-order-id-input')) {
     document.getElementById('track-order-id-input').value = '';
   }
@@ -1130,7 +1142,6 @@ function openTrackOrderModal() {
     document.getElementById('track-order-result').innerHTML = '';
   }
   renderMyOrdersList();
-  openModal('modal-track-order');
 }
 
 async function handleTrackOrder() {

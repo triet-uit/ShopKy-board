@@ -30,8 +30,8 @@
       
       <div class="header-center">
         <nav class="nav-links">
-          <a href="#" class="active" onclick="showCatalog()" data-translate="nav_shop">Shop</a>
-          <a href="#" onclick="openTrackOrderModal()" data-translate="nav_track">Track Order</a>
+          <a href="#" id="nav-shop" class="active" onclick="showShopView()" data-translate="nav_shop">Shop</a>
+          <a href="#" id="nav-track" onclick="showTrackOrderView()" data-translate="nav_track">Track Order</a>
         </nav>
       </div>
 
@@ -86,8 +86,12 @@
       </div>
     </header>
 
-    <!-- HERO SECTION -->
-    <section class="hero-section">
+    <!-- ==========================================================================
+         VIEW: SHOP
+         ========================================================================== -->
+    <div id="view-shop">
+      <!-- HERO SECTION -->
+      <section class="hero-section">
       <div class="hero-content">
         <h2 data-translate="hero_title">Modern Curated Shopping</h2>
         <p data-translate="hero_subtitle">Explore premium fashion wear, state-of-the-art tech gadgets, and fresh sunset flowers.</p>
@@ -126,6 +130,26 @@
       <!-- Products Grid -->
       <div id="products-grid" class="products-grid">
         <!-- Dynamic content via JS -->
+      </div>
+    </main>
+    </div>
+
+    <!-- ==========================================================================
+         VIEW: TRACK ORDER
+         ========================================================================== -->
+    <main id="view-track-order" class="shop-main" style="display: none; padding-top: 2rem; min-height: 60vh;">
+      <h2 style="font-family: var(--font-family-title); font-size: 2.2rem; font-weight: 800; margin-bottom: 2rem; text-align: center;" data-translate="track_title">Track Order Status</h2>
+      <div id="my-orders-section" style="display: block; max-width: 800px; margin: 0 auto;">
+        <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; border-bottom: 1px dashed var(--border-glass); padding-bottom: 0.5rem;" data-translate="my_orders_title">Your Orders</h4>
+        <div id="my-orders-list" style="display: flex; flex-direction: column; gap: 0.8rem;">
+          <!-- Dynamic list -->
+        </div>
+      </div>
+      <!-- Input ẩn để tương thích code cũ -->
+      <input type="hidden" id="track-order-id-input">
+      <!-- Chi tiết đơn hàng khi click -->
+      <div id="track-order-result" class="track-order-result" style="margin-top: 2rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+        <!-- Dynamic Order Track Details -->
       </div>
     </main>
 
@@ -353,38 +377,6 @@
         </div>
 
         <button id="btn-success-continue" class="btn-primary" onclick="closeOrderSuccess()" data-translate="success_continue" style="margin-top: 1rem; width: 100%;">Continue Shopping</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==========================================================================
-       MODAL: TRACK ORDER
-       ========================================================================== -->
-  <div id="modal-track-order" class="modal-overlay">
-    <div class="modal-container track-modal">
-      <div class="modal-header">
-        <h2 data-translate="track_title">Track Order Status</h2>
-        <button class="btn-modal-close" onclick="closeModal('modal-track-order')">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-      <div class="modal-body">
-        <!-- Danh sách đơn hàng: hiển thị toàn bộ, không cần nhập mã -->
-        <div id="my-orders-section" style="display: block;">
-          <h4 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 0.75rem; border-bottom: 1px dashed var(--border-glass); padding-bottom: 0.4rem;" data-translate="my_orders_title">Your Orders</h4>
-          <div id="my-orders-list" style="display: flex; flex-direction: column; gap: 0.6rem;">
-            <!-- Dynamic list -->
-          </div>
-        </div>
-        <!-- Input ẩn để tương thích code cũ -->
-        <input type="hidden" id="track-order-id-input">
-        <!-- Chi tiết đơn hàng khi click -->
-        <div id="track-order-result" class="track-order-result" style="margin-top: 1rem;">
-          <!-- Dynamic Order Track Details -->
-        </div>
       </div>
     </div>
   </div>
